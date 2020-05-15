@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComparisonTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">ComparisonTransformation.java</span></div><h1>ComparisonTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.BOOLEANDS;
+import static java.util.Collections.singletonMap;
+
+import java.util.function.BiFunction;
+
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLIncompatibleMeasuresException;
+import it.bancaditalia.oss.vtl.impl.types.data.BooleanValue;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.impl.types.operators.ComparisonOperator;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomain;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class ComparisonTransformation extends BinaryTransformation
+{
+	private static final long serialVersionUID = 1L;
+
+<span class="pc" id="L56">	private static final VTLScalarValueMetadata&lt;BooleanDomainSubset&gt; METABOOL = () -&gt; BOOLEANDS;</span>
+
+	private final ComparisonOperator operator;
+
+	private VTLDataSetMetadata metadata;
+<span class="fc" id="L61">	private boolean castToLeft = false;</span>
+
+	public ComparisonTransformation(ComparisonOperator operator, Transformation left, Transformation right)
+	{
+<span class="fc" id="L65">		super(left, right);</span>
+
+<span class="fc" id="L67">		this.operator = operator;</span>
+<span class="fc" id="L68">	}</span>
+
+	@Override
+	protected VTLValue evalTwoScalars(ScalarValue&lt;?, ?, ?&gt; left, ScalarValue&lt;?, ?, ?&gt; right)
+	{
+<span class="nc bnc" id="L73" title="All 4 branches missed.">		if (left instanceof NullValue || right instanceof NullValue)</span>
+<span class="nc" id="L74">			return BooleanValue.FALSE;</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (castToLeft)</span>
+<span class="nc" id="L77">			right = left.getDomain().cast(right);</span>
+		else
+<span class="nc" id="L79">			left = right.getDomain().cast(left);</span>
+
+<span class="nc" id="L81">		return operator.apply(left, right);</span>
+	}
+
+	@Override
+	protected VTLValue evalDatasetWithScalar(boolean datasetIsLeftOp, DataSet dataset, ScalarValue&lt;?, ?, ?&gt; scalar)
+	{
+<span class="nc" id="L87">		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; resultMeasure = metadata.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="nc" id="L88">		DataStructureComponent&lt;? extends Measure, ?, ?&gt; measure = dataset.getComponents(Measure.class).iterator().next();</span>
+
+		final ScalarValue&lt;?, ?, ?&gt; castedScalar;
+<span class="nc bnc" id="L91" title="All 4 branches missed.">		if (castToLeft &amp;&amp; datasetIsLeftOp)</span>
+<span class="nc" id="L92">			castedScalar = measure.cast(scalar);</span>
+		else
+<span class="nc" id="L94">			castedScalar = scalar;</span>
+		
+<span class="nc bnc" id="L96" title="All 2 branches missed.">		if (castToLeft) </span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">			if (datasetIsLeftOp)</span>
+<span class="nc" id="L98">				return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, operator.apply(dp.get(measure), castedScalar)));</span>
+			else
+<span class="nc" id="L100">				return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, operator.apply(scalar, scalar.getDomain().cast(dp.get(measure)))));</span>
+		else
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			if (datasetIsLeftOp)</span>
+<span class="nc" id="L103">				return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, operator.apply(scalar.getDomain().cast(dp.get(measure)), scalar)));</span>
+			else
+<span class="nc" id="L105">				return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, operator.apply(castedScalar, dp.get(measure))));</span>
+	}
+
+	@Override
+	protected VTLValue evalTwoDatasets(DataSet left, DataSet right)
+	{
+<span class="fc" id="L111">		boolean leftHasMoreIdentifiers = left.getComponents(Identifier.class).containsAll(right.getComponents(Identifier.class));</span>
+
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		DataSet streamed = leftHasMoreIdentifiers ? right : left;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		DataSet indexed = leftHasMoreIdentifiers ? left : right;</span>
+<span class="fc" id="L115">		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; resultMeasure = metadata.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="fc" id="L116">		DataStructureComponent&lt;? extends Measure, ?, ?&gt; indexedMeasure = indexed.getComponents(Measure.class).iterator().next();</span>
+<span class="fc" id="L117">		DataStructureComponent&lt;? extends Measure, ?, ?&gt; streamedMeasure = streamed.getComponents(Measure.class).iterator().next();</span>
+		
+		// must remember which is the left operand because some operators are not commutative, also cast
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		BiFunction&lt;ScalarValue&lt;?, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;, ScalarValue&lt;?, BooleanDomainSubset, BooleanDomain&gt;&gt; casted = (a, b) -&gt; castToLeft ? operator.apply(a, a.getDomain().cast(b)) : operator.apply(b.getDomain().cast(a), b);</span>
+<span class="fc" id="L121">		BiFunction&lt;ScalarValue&lt;?, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;, ScalarValue&lt;?, BooleanDomainSubset, BooleanDomain&gt;&gt; function =</span>
+<span class="fc" id="L122">				Utils.reverseIf(leftHasMoreIdentifiers, casted);</span>
+
+		// Scan the dataset with less identifiers and find the matches
+<span class="fc" id="L125">		return streamed.filteredMappedJoin(metadata, indexed,</span>
+<span class="fc" id="L126">						(dps, dpi) -&gt; true,</span>
+<span class="fc" id="L127">						(dps, dpi) -&gt; new DataPointBuilder()</span>
+<span class="fc" id="L128">								.addAll(dps.getValues(Identifier.class))</span>
+<span class="fc" id="L129">								.addAll(dpi.getValues(Identifier.class))</span>
+<span class="fc" id="L130">								.add(resultMeasure, function.apply(dps.get(indexedMeasure), dpi.get(streamedMeasure)))</span>
+<span class="fc" id="L131">								.build(metadata));</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+		// TODO: BETTER CHECKS
+
+		// else if (!l.getDomain().isAssignableFrom(r.getDomain()) &amp;&amp; !r.getDomain().isAssignableFrom(l.getDomain()))
+		// return BooleanValue.FALSE;
+		// else if (op != VTL.EQUAL &amp;&amp; op != VTL.DIAMOND &amp;&amp; !l.getDomain().isComparableWith(r.getDomain()))
+		// throw new UnsupportedOperationException(&quot;Operators are of incompatible domains in comparison: &quot; + l.getDomain() + &quot;,
+		// &quot; + r.getDomain());
+
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		if (metadata != null)</span>
+<span class="nc" id="L146">			return metadata;</span>
+		
+<span class="fc" id="L148">		VTLValueMetadata left = leftOperand.getMetadata(session), right = rightOperand.getMetadata(session); </span>
+<span class="fc" id="L149">		castToLeft = false;</span>
+		
+<span class="pc bpc" id="L151" title="3 of 4 branches missed.">		if (left instanceof VTLScalarValueMetadata &amp;&amp; right instanceof VTLScalarValueMetadata)</span>
+		{
+<span class="nc" id="L153">			VTLScalarValueMetadata&lt;?&gt; scalarLeft = (VTLScalarValueMetadata&lt;?&gt;) left;</span>
+<span class="nc" id="L154">			VTLScalarValueMetadata&lt;?&gt; scalarRight = (VTLScalarValueMetadata&lt;?&gt;) right;</span>
+
+<span class="nc" id="L156">			castToLeft = scalarLeft.getDomain().isAssignableFrom(scalarRight.getDomain()); </span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">			if (castToLeft || scalarRight.getDomain().isAssignableFrom(scalarLeft.getDomain())) </span>
+<span class="nc" id="L158">				return METABOOL;</span>
+			else
+<span class="nc" id="L160">				throw new VTLIncompatibleTypesException(&quot;comparison branch&quot;, scalarLeft.getDomain(), ((VTLScalarValueMetadata&lt;?&gt;) right).getDomain());</span>
+		}
+<span class="pc bpc" id="L162" title="4 of 8 branches missed.">		else if (left instanceof VTLDataSetMetadata &amp;&amp; right instanceof VTLScalarValueMetadata ||</span>
+				right instanceof VTLDataSetMetadata &amp;&amp; left instanceof VTLScalarValueMetadata)
+		{
+<span class="nc" id="L165">			boolean leftIsDataset = left instanceof VTLDataSetMetadata;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			VTLDataSetMetadata ds = leftIsDataset ? (VTLDataSetMetadata) left : (VTLDataSetMetadata) right;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">			ValueDomainSubset&lt;?&gt; scalarDomain = (leftIsDataset ? (VTLScalarValueMetadata&lt;?&gt;) right : (VTLScalarValueMetadata&lt;?&gt;) left).getDomain();</span>
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			if (ds.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L170">				throw new VTLExpectedComponentException(Measure.class, ds);</span>
+<span class="nc" id="L171">			DataStructureComponent&lt;?, ?, ?&gt; measure = ds.getComponents(Measure.class).iterator().next();</span>
+			
+<span class="nc bnc" id="L173" title="All 2 branches missed.">			if (leftIsDataset)</span>
+<span class="nc" id="L174">				castToLeft = measure.getDomain().isAssignableFrom(scalarDomain);</span>
+			else
+<span class="nc" id="L176">				castToLeft = scalarDomain.isAssignableFrom(measure.getDomain());</span>
+
+<span class="nc bnc" id="L178" title="All 8 branches missed.">			if (!castToLeft &amp;&amp; (leftIsDataset &amp;&amp; !scalarDomain.isAssignableFrom(measure.getDomain())</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">					|| !leftIsDataset &amp;&amp; !measure.getDomain().isAssignableFrom(scalarDomain)))</span>
+<span class="nc" id="L180">				throw new VTLIncompatibleTypesException(&quot;comparison condition&quot;, measure, scalarDomain);</span>
+			
+<span class="nc" id="L182">			return metadata = new Builder().addComponents(ds.getComponents(Identifier.class))</span>
+<span class="nc" id="L183">					.addComponents(new DataStructureComponentImpl&lt;&gt;(&quot;bool_var&quot;, Measure.class, BOOLEANDS)).build();</span>
+		}
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">		else if (left instanceof VTLDataSetMetadata &amp;&amp; right instanceof VTLDataSetMetadata)</span>
+		{
+<span class="fc" id="L187">			VTLDataSetMetadata dsLeft = (VTLDataSetMetadata) left, dsRight = (VTLDataSetMetadata) right;</span>
+			
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			if (dsLeft.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L190">				throw new VTLExpectedComponentException(Measure.class, dsLeft.getComponents(Measure.class));</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">			if (dsRight.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L192">				throw new VTLExpectedComponentException(Measure.class, dsRight.getComponents(Measure.class));</span>
+			
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">			if (!dsLeft.getComponents(Identifier.class).containsAll(dsRight.getComponents(Identifier.class)) </span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">					&amp;&amp; !dsRight.getComponents(Identifier.class).containsAll(dsLeft.getComponents(Identifier.class)))</span>
+<span class="nc" id="L196">				throw new UnsupportedOperationException(&quot;One operand of comparison must contain all identifiers of the other.&quot;);</span>
+
+<span class="fc" id="L198">			final DataStructureComponent&lt;? extends Measure, ?, ?&gt; leftMeasure = dsLeft.getComponents(Measure.class).iterator().next(),</span>
+<span class="fc" id="L199">					rightMeasure = dsLeft.getComponents(Measure.class).iterator().next();</span>
+			
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">			if (leftMeasure.getDomain().isAssignableFrom(rightMeasure.getDomain()))</span>
+<span class="fc" id="L202">				castToLeft = true;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">			else if (!rightMeasure.getDomain().isAssignableFrom(leftMeasure.getDomain()))</span>
+<span class="nc" id="L204">				throw new VTLIncompatibleMeasuresException(&quot;comparison&quot;, leftMeasure, rightMeasure);</span>
+
+<span class="fc" id="L206">			return metadata = new Builder()</span>
+<span class="fc" id="L207">					.addComponents(dsLeft.getComponents(Identifier.class))</span>
+<span class="fc" id="L208">					.addComponents(dsRight.getComponents(Identifier.class))</span>
+<span class="fc" id="L209">					.addComponents(new DataStructureComponentImpl&lt;&gt;(&quot;bool_var&quot;, Measure.class, BOOLEANDS))</span>
+<span class="fc" id="L210">					.build();</span>
+		}
+
+<span class="nc" id="L213">		throw new UnsupportedOperationException(&quot;Found invalid parameters in comparison: &quot; + left + &quot;, &quot; + right);</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L219">		return leftOperand + &quot; &quot; + operator + &quot; &quot; + rightOperand;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

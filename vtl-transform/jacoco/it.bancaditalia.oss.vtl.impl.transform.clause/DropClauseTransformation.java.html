@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DropClauseTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.clause</a> &gt; <span class="el_source">DropClauseTransformation.java</span></div><h1>DropClauseTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.clause;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import it.bancaditalia.oss.vtl.exceptions.VTLMissingComponentsException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLInvalidParameterException;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLInvariantIdentifiersException;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.NonIdentifier;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructure;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class DropClauseTransformation extends DatasetClauseTransformation
+{
+	private static final long serialVersionUID = 1L;
+
+	private final List&lt;String&gt; names;
+	private VTLDataSetMetadata metadata;
+	
+	public DropClauseTransformation(List&lt;String&gt; names)
+<span class="nc" id="L54">	{</span>
+<span class="nc" id="L55">		this.names = names;</span>
+<span class="nc" id="L56">	}</span>
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+<span class="nc" id="L61">		DataSet dataset = (DataSet) getThisValue(session);</span>
+<span class="nc" id="L62">		Set&lt;DataStructureComponent&lt;NonIdentifier, ?, ?&gt;&gt; toDrop = Utils.getStream(names)</span>
+<span class="nc" id="L63">				.map(n -&gt; dataset.getComponent(n))</span>
+<span class="nc" id="L64">				.map(Optional::get)</span>
+<span class="nc" id="L65">				.map(c -&gt; c.as(NonIdentifier.class))</span>
+<span class="nc" id="L66">				.collect(toSet());</span>
+		
+<span class="nc" id="L68">		return dataset.mapKeepingKeys(metadata, dp -&gt; {</span>
+<span class="nc" id="L69">				Map&lt;DataStructureComponent&lt;? extends NonIdentifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; newVals = new HashMap&lt;&gt;(dp.getValues(NonIdentifier.class));</span>
+<span class="nc" id="L70">				newVals.keySet().removeAll(toDrop);</span>
+<span class="nc" id="L71">				return newVals;</span>
+			});
+	}
+	
+	@Override
+	public VTLDataSetMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc" id="L78">		VTLValueMetadata operand = getThisMetadata(session);</span>
+		
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		if (!(operand instanceof VTLDataSetMetadata))</span>
+<span class="nc" id="L81">			throw new VTLInvalidParameterException(operand, VTLDataSetMetadata.class);</span>
+		
+<span class="nc" id="L83">		Set&lt;? extends DataStructureComponent&lt;? extends Identifier, ?, ?&gt;&gt; namedIDs = Utils.getStream(names)</span>
+<span class="nc" id="L84">				.map(((VTLDataSetMetadata)operand)::getComponent)</span>
+<span class="nc" id="L85">				.map(o -&gt; o.orElseThrow(() -&gt; new VTLMissingComponentsException((DataStructure) operand, names.toArray(new String[0]))))</span>
+<span class="nc" id="L86">				.filter(c -&gt; c.is(Identifier.class))</span>
+<span class="nc" id="L87">				.map(c -&gt; c.as(Identifier.class))</span>
+<span class="nc" id="L88">				.collect(toSet());</span>
+		
+<span class="nc bnc" id="L90" title="All 2 branches missed.">		if (!namedIDs.isEmpty())</span>
+<span class="nc" id="L91">			throw new VTLInvariantIdentifiersException(&quot;drop&quot;, namedIDs);</span>
+
+<span class="nc" id="L93">		metadata = ((VTLDataSetMetadata) operand).drop(names);</span>
+		
+<span class="nc" id="L95">		return metadata;</span>
+	}
+
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L101">		return names.stream().collect(joining(&quot;, &quot;, &quot;[drop &quot;, &quot;]&quot;));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

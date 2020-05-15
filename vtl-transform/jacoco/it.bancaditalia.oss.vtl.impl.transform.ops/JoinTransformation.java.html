@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JoinTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">JoinTransformation.java</span></div><h1>JoinTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.transform.ops.JoinTransformation.JoinOperator.INNER_JOIN;
+import static it.bancaditalia.oss.vtl.impl.transform.ops.JoinTransformation.JoinOperator.LEFT_JOIN;
+import static it.bancaditalia.oss.vtl.util.Utils.byKey;
+import static it.bancaditalia.oss.vtl.util.Utils.byValue;
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.groupingByConcurrent;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toConcurrentMap;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.impl.transform.dataset.LightFDataSet;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLAmbiguousComponentException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLSyntaxException;
+import it.bancaditalia.oss.vtl.impl.transform.scope.JoinApplyScope;
+import it.bancaditalia.oss.vtl.impl.transform.scope.ThisScope;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.NamedDataSet;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.NonIdentifier;
+import it.bancaditalia.oss.vtl.model.data.DataPoint;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class JoinTransformation extends TransformationImpl
+{
+	private static final long serialVersionUID = 1L;
+<span class="nc" id="L85">	private static final Logger LOGGER = LoggerFactory.getLogger(JoinTransformation.class);</span>
+
+<span class="nc" id="L87">	public enum JoinOperator</span>
+	{
+<span class="nc" id="L89">		 LEFT_JOIN,	INNER_JOIN, FULL_JOIN, CROSS_JOIN;</span>
+	}
+	
+	public static class JoinOperand implements Serializable
+	{
+		private static final long serialVersionUID = 1L;
+		
+		private final Transformation operand;
+		private final String id;
+		
+		public JoinOperand(Transformation operand, String id)
+<span class="nc" id="L100">		{</span>
+<span class="nc" id="L101">			this.operand = operand;</span>
+<span class="nc" id="L102">			this.id = id;</span>
+<span class="nc" id="L103">		}</span>
+
+		public Transformation getOperand()
+		{
+<span class="nc" id="L107">			return operand;</span>
+		}
+
+		public String getId()
+		{
+<span class="nc bnc" id="L112" title="All 4 branches missed.">			return id != null ? id : operand instanceof VarIDOperand ? ((VarIDOperand) operand).getText() : null;</span>
+		}
+		
+		@Override
+		public String toString()
+		{
+<span class="nc bnc" id="L118" title="All 2 branches missed.">			return operand + (id != null ? &quot; AS &quot; + id : &quot;&quot;);</span>
+		}
+	}
+
+	private final JoinOperator operator;
+	private final List&lt;String&gt; usingNames;
+	private final List&lt;JoinOperand&gt; operands;
+	private final Transformation apply;
+	private final Transformation keepOrDrop;
+	private final Transformation rename;
+	private final Transformation filter;
+	private final Transformation calc;
+	private final Transformation aggr;
+
+	private VTLDataSetMetadata metadata;
+	private JoinOperand referenceDataSet;
+
+	public JoinTransformation(JoinOperator operator, List&lt;JoinOperand&gt; operands, List&lt;String&gt; using, Transformation filter, Transformation apply, Transformation calc, Transformation aggr, Transformation keepOrDrop, Transformation rename)
+<span class="nc" id="L136">	{</span>
+<span class="nc" id="L137">		this.operator = operator;</span>
+<span class="nc" id="L138">		this.filter = filter;</span>
+<span class="nc" id="L139">		this.calc = calc;</span>
+<span class="nc" id="L140">		this.aggr = aggr;</span>
+<span class="nc" id="L141">		this.apply = apply;</span>
+<span class="nc" id="L142">		this.rename = rename;</span>
+<span class="nc" id="L143">		this.operands = unmodifiableList(operands);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">		this.usingNames = using == null ? emptyList() : using;</span>
+<span class="nc" id="L145">		this.keepOrDrop = keepOrDrop;</span>
+<span class="nc" id="L146">	}</span>
+
+	@Override
+	public boolean isTerminal()
+	{
+<span class="nc" id="L151">		return false;</span>
+	}
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L157">		return operands.stream()</span>
+<span class="nc" id="L158">				.map(JoinOperand::getOperand)</span>
+<span class="nc" id="L159">				.map(Transformation::getTerminals)</span>
+<span class="nc" id="L160">				.flatMap(Set::stream)</span>
+<span class="nc" id="L161">				.collect(toSet());</span>
+	}
+
+	@Override
+	public DataSet eval(TransformationScheme session)
+	{
+<span class="nc" id="L167">		LOGGER.debug(&quot;Preparing renamed datasets for join&quot;);</span>
+		
+<span class="nc" id="L169">		Map&lt;JoinOperand, DataSet&gt; values = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">		for (JoinOperand operand: operands)</span>
+<span class="nc" id="L171">			values.put(operand, (DataSet) operand.getOperand().eval(session));</span>
+		
+<span class="nc" id="L173">		Map&lt;JoinOperand, DataSet&gt; datasets = Utils.getStream(values.entrySet())</span>
+<span class="nc" id="L174">				.collect(toConcurrentMap(Entry::getKey, Utils.splitting(this::generateRenamedDataset)));</span>
+		
+		DataSet result;
+		
+<span class="nc bnc" id="L178" title="All 2 branches missed.">		if (usingNames.isEmpty())</span>
+		{
+			// Case A: join all to reference ds
+<span class="nc" id="L181">			LOGGER.debug(&quot;Collecting all identifiers&quot;);</span>
+<span class="nc" id="L182">			Map&lt;DataSet, Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt;&gt; ids = Utils.getStream(datasets)</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">					.filter(byKey(op -&gt; op != referenceDataSet))</span>
+<span class="nc" id="L184">					.map(Entry::getValue)</span>
+<span class="nc" id="L185">					.collect(toConcurrentMap(ds -&gt; ds, ds -&gt; ds.getComponents(Identifier.class)));</span>
+
+			// TODO: Memory hungry!!! Find some way to stream instead of building this big index collection 
+<span class="nc" id="L188">			LOGGER.debug(&quot;Indexing all datapoints&quot;);</span>
+<span class="nc" id="L189">			Map&lt;DataSet, ? extends Map&lt;Map&lt;DataStructureComponent&lt;Identifier,?,?&gt;, ScalarValue&lt;?,?,?&gt;&gt;, DataPoint&gt;&gt; indexes = Utils.getStream(datasets)</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">					.filter(Utils.byKey(op -&gt; op != referenceDataSet))</span>
+<span class="nc" id="L191">					.map(Entry::getValue)</span>
+<span class="nc" id="L192">					.collect(toConcurrentMap(ds -&gt; ds, ds -&gt; {</span>
+<span class="nc" id="L193">						try (Stream&lt;DataPoint&gt; stream = ds.stream())</span>
+						{
+<span class="nc" id="L195">							return stream</span>
+									// toMap instead of groupingBy because there's never more than one datapoint in each group
+<span class="nc" id="L197">									.peek(dp -&gt; LOGGER.trace(&quot;Indexing {}&quot;, dp))</span>
+<span class="nc" id="L198">									.collect(toConcurrentMap(dp -&gt; dp.getValues(Identifier.class), dp -&gt; dp));</span>
+						}
+					}));
+			
+<span class="nc" id="L202">			LOGGER.debug(&quot;Joining all datapoints&quot;);</span>
+<span class="nc" id="L203">			result = new LightFDataSet&lt;&gt;(metadata, dataset -&gt; dataset.stream()</span>
+<span class="nc" id="L204">				.peek(refDP -&gt; LOGGER.trace(&quot;Joining {}&quot;, refDP))</span>
+<span class="nc" id="L205">				.map(refDP -&gt; {</span>
+					// Get all datapoints from other datasets (there is no more than 1 for each dataset)
+<span class="nc" id="L207">					List&lt;DataPoint&gt; otherDPs = Utils.getStream(datasets)</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">							.filter(byKey(op -&gt; op != referenceDataSet))</span>
+<span class="nc" id="L209">							.map(Entry::getValue)</span>
+<span class="nc" id="L210">							.map(ds -&gt; indexes.get(ds).get(refDP.getValues(ids.get(ds), Identifier.class)))</span>
+<span class="nc" id="L211">							.filter(Objects::nonNull)</span>
+<span class="nc" id="L212">							.collect(toList());</span>
+						
+<span class="nc bnc" id="L214" title="All 2 branches missed.">					switch (operator)</span>
+					{
+						case INNER_JOIN:
+						case LEFT_JOIN:
+<span class="nc bnc" id="L218" title="All 2 branches missed.">							if (otherDPs.size() != indexes.size())</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">								return operator == INNER_JOIN ? null : new DataPointBuilder(refDP)</span>
+<span class="nc" id="L220">										.addAll(metadata.stream().collect(toMap(c -&gt; c, c -&gt; NullValue.instanceFrom(c))))</span>
+<span class="nc" id="L221">										.build(metadata);</span>
+							else
+							{
+								// Join all datapoints
+<span class="nc" id="L225">								DataPoint accDP = refDP;</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">								for (DataPoint otherDP : otherDPs)</span>
+<span class="nc" id="L227">									accDP = accDP.merge(otherDP);</span>
+								
+<span class="nc" id="L229">								LOGGER.trace(&quot;Joined {}&quot;, accDP);</span>
+<span class="nc" id="L230">								return accDP;</span>
+							}
+<span class="nc" id="L232">						default: throw new UnsupportedOperationException(operator + &quot; not implemented&quot;); </span>
+					}
+<span class="nc" id="L234">				}).filter(Objects::nonNull), datasets.get(referenceDataSet));</span>
+<span class="nc" id="L235">		}</span>
+		else
+		{
+//			Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; using = usingNames.stream()
+//					.map(metadata::getComponent)
+//					.collect(Collectors.toSet());
+//			
+//			boolean isCaseB1 = datasets.values().stream()
+//					.map(DataSet::getDataStructure)
+//					.allMatch(str -&gt; str.containsAll(using));
+//			
+//			if (isCaseB1)
+//			{
+//				// case B1: join all to reference dataset with given keys
+//				DataSet accumulator = datasets.get(referenceDataSet);
+//				for (JoinOperand item: datasets.keySet())
+//					if (item != referenceDataSet)
+//						accumulator = performBinaryJoin(accumulator, datasets.get(item));
+//				
+//				return accumulator;
+//			}
+//			else
+<span class="nc" id="L257">				throw new UnsupportedOperationException(&quot;inner_join case B1-B2 not implemented&quot;);</span>
+		}
+		
+<span class="nc bnc" id="L260" title="All 2 branches missed.">		if (filter != null)</span>
+<span class="nc" id="L261">			result = (DataSet) filter.eval(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">		if (apply != null)</span>
+<span class="nc" id="L263">			result = applyClause(session, result);</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">		if (calc != null)</span>
+<span class="nc" id="L265">			result = (DataSet) calc.eval(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">		if (aggr != null)</span>
+<span class="nc" id="L267">			result = (DataSet) aggr.eval(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">		if (keepOrDrop != null)</span>
+<span class="nc" id="L269">			result = (DataSet) keepOrDrop.eval(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">		if (rename != null)</span>
+<span class="nc" id="L271">			result = (DataSet) rename.eval(new ThisScope(result, session));</span>
+		
+<span class="nc" id="L273">		return result;</span>
+	}
+
+	private DataSet applyClause(TransformationScheme session, DataSet dataset)
+	{
+<span class="nc bnc" id="L278" title="All 2 branches missed.">		if (apply == null)</span>
+<span class="nc" id="L279">			return dataset;</span>
+		
+<span class="nc" id="L281">		Set&lt;DataStructureComponent&lt;Measure, ?, ?&gt;&gt; applyComponents = metadata.getComponents(Measure.class).stream()</span>
+<span class="nc" id="L282">				.map(c -&gt; c.getName( ).replaceAll(&quot;^.*#&quot;, &quot;&quot;))</span>
+<span class="nc" id="L283">				.distinct()</span>
+<span class="nc" id="L284">				.map(name -&gt; {</span>
+<span class="nc" id="L285">					ValueDomainSubset&lt;?&gt; domain = ((VTLScalarValueMetadata&lt;?&gt;) apply.getMetadata(new JoinApplyScope(session, name, metadata))).getDomain();</span>
+<span class="nc" id="L286">					return new DataStructureComponentImpl&lt;&gt;(name, Measure.class, domain);</span>
+<span class="nc" id="L287">				}).collect(toSet());</span>
+		
+<span class="nc" id="L289">		VTLDataSetMetadata applyMetadata = metadata.stream()</span>
+<span class="nc bnc" id="L290" title="All 4 branches missed.">				.filter(c -&gt; !c.is(Measure.class) || !c.getName().contains(&quot;#&quot;))</span>
+<span class="nc" id="L291">				.reduce(new Builder(), Builder::addComponent, Builder::merge)</span>
+<span class="nc" id="L292">				.addComponents(applyComponents)</span>
+<span class="nc" id="L293">				.build();</span>
+		
+<span class="nc" id="L295">		return dataset.mapKeepingKeys(applyMetadata, dp -&gt; applyComponents.stream()</span>
+<span class="nc" id="L296">				.collect(toConcurrentMap(c -&gt; c, c -&gt; (ScalarValue&lt;?, ?, ?&gt;) apply.eval(new JoinApplyScope(session, c.getName(), dp)))));</span>
+	}
+
+	private DataSet generateRenamedDataset(JoinOperand op, DataSet ds)
+	{
+<span class="nc" id="L301">		Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; nonMatching = new HashSet&lt;&gt;(ds.getComponents());</span>
+<span class="nc" id="L302">		nonMatching.removeAll(metadata);</span>
+		// Shortcut if no component is to be renamed
+<span class="nc bnc" id="L304" title="All 2 branches missed.">		if (nonMatching.isEmpty())</span>
+<span class="nc" id="L305">			return new NamedDataSet(op.getId(), ds);</span>
+		else
+		{
+<span class="nc" id="L308">			LOGGER.trace(&quot;In dataset {} renaming components {}&quot;, op.getId(), ds.getComponents());</span>
+<span class="nc" id="L309">			Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; matching = new HashSet&lt;&gt;(ds.getComponents());</span>
+<span class="nc" id="L310">			matching.retainAll(metadata);</span>
+<span class="nc" id="L311">			Map&lt;DataStructureComponent&lt;?, ?, ?&gt;, DataStructureComponent&lt;?, ?, ?&gt;&gt; renamed = nonMatching.stream()</span>
+<span class="nc" id="L312">					.collect(toMap(c -&gt; c, c -&gt; c.rename(op.getId() + &quot;#&quot; + c.getName())));</span>
+<span class="nc" id="L313">			VTLDataSetMetadata operandStructure = new DataStructureImpl.Builder(matching)</span>
+<span class="nc" id="L314">					.addComponents(renamed.values())</span>
+<span class="nc" id="L315">					.build();</span>
+<span class="nc" id="L316">			LOGGER.trace(&quot;Structure of dataset {} will be changed to {}&quot;, op.getId(), operandStructure);</span>
+			// must go through all datapoints to rename each component in the datapoint
+<span class="nc" id="L318">			return new NamedDataSet(op.getId(), new LightFDataSet&lt;&gt;(operandStructure, dataset -&gt; dataset.stream()</span>
+<span class="nc" id="L319">				.map(dp -&gt; new DataPointBuilder(Utils.getStream(nonMatching)</span>
+<span class="nc" id="L320">								.collect(toMap(renamed::get, dp::get)))</span>
+<span class="nc" id="L321">							.addAll(dp.getValues(matching))</span>
+<span class="nc" id="L322">							.build(operandStructure)), ds));</span>
+		}
+	}
+
+	@Override
+	public VTLDataSetMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc bnc" id="L329" title="All 2 branches missed.">		if (metadata != null)</span>
+<span class="nc" id="L330">			return metadata;</span>
+		
+<span class="nc bnc" id="L332" title="All 4 branches missed.">		if (operator != INNER_JOIN &amp;&amp; operator != LEFT_JOIN)</span>
+<span class="nc" id="L333">			throw new UnsupportedOperationException(&quot;Not implemented: &quot; + operator.toString());</span>
+		
+<span class="nc" id="L335">		Set&lt;Transformation&gt; unaliased = operands.stream()</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">				.filter(o -&gt; o.getId() == null)</span>
+<span class="nc" id="L337">				.map(JoinOperand::getOperand)</span>
+<span class="nc" id="L338">				.collect(toSet());</span>
+		
+<span class="nc bnc" id="L340" title="All 2 branches missed.">		if (unaliased.size() &gt; 0)</span>
+<span class="nc" id="L341">			throw new VTLSyntaxException(&quot;Join expressions must be aliased: &quot; + unaliased + &quot;.&quot;, null);</span>
+		
+<span class="nc" id="L343">		Set&lt;String&gt; counts = operands.stream()</span>
+<span class="nc" id="L344">				.map(JoinOperand::getId)</span>
+<span class="nc" id="L345">				.collect(groupingBy(identity(), counting()))</span>
+<span class="nc" id="L346">				.entrySet().stream()</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">				.filter(e -&gt; e.getValue() &gt; 1)</span>
+<span class="nc" id="L348">				.map(Entry::getKey)</span>
+<span class="nc" id="L349">				.collect(toSet());</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">		if (counts.size() &gt; 0)</span>
+<span class="nc" id="L351">			throw new VTLSyntaxException(&quot;Duplicate aliases in join: &quot; + counts);</span>
+
+<span class="nc" id="L353">		Map&lt;JoinOperand, VTLDataSetMetadata&gt; datasetsMeta = operands.stream()</span>
+<span class="nc" id="L354">				.collect(toMap(op -&gt; op, op -&gt; (VTLDataSetMetadata) op.getOperand().getMetadata(session)));</span>
+		
+<span class="nc" id="L356">		Optional&lt;JoinOperand&gt; caseAorB1 = isCaseAorB1(datasetsMeta);</span>
+<span class="nc" id="L357">		Optional&lt;JoinOperand&gt; caseB2 = isCaseB2(caseAorB1, datasetsMeta);</span>
+		
+<span class="nc" id="L359">		referenceDataSet = caseAorB1.orElseGet(caseB2::get);</span>
+		
+<span class="nc bnc" id="L361" title="All 2 branches missed.">		LOGGER.info(&quot;Joining {} to ({}: {})&quot;, operands.stream().filter(op -&gt; op != referenceDataSet).map(JoinOperand::getId).collect(toList()), </span>
+<span class="nc" id="L362">				referenceDataSet.getId(), datasetsMeta.get(referenceDataSet));</span>
+			
+<span class="nc" id="L364">		metadata = joinStructures(datasetsMeta, caseAorB1, caseB2);</span>
+		
+<span class="nc" id="L366">		VTLDataSetMetadata result = metadata;</span>
+		
+<span class="nc bnc" id="L368" title="All 2 branches missed.">		if (filter != null)</span>
+<span class="nc" id="L369">			result = (VTLDataSetMetadata) aggr.getMetadata(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">		if (apply != null)</span>
+		{
+<span class="nc" id="L372">			Set&lt;DataStructureComponent&lt;Measure, ?, ?&gt;&gt; applyComponents = metadata.getComponents(Measure.class).stream()</span>
+<span class="nc" id="L373">					.map(c -&gt; c.getName( ).replaceAll(&quot;^.*#&quot;, &quot;&quot;))</span>
+<span class="nc" id="L374">					.distinct()</span>
+<span class="nc" id="L375">					.map(name -&gt; {</span>
+<span class="nc" id="L376">						ValueDomainSubset&lt;?&gt; domain = ((VTLScalarValueMetadata&lt;?&gt;) apply.getMetadata(new JoinApplyScope(session, name, metadata))).getDomain();</span>
+<span class="nc" id="L377">						return new DataStructureComponentImpl&lt;&gt;(name, Measure.class, domain);</span>
+<span class="nc" id="L378">					}).collect(toSet());</span>
+			
+<span class="nc" id="L380">			result = metadata.stream()</span>
+<span class="nc bnc" id="L381" title="All 4 branches missed.">					.filter(c -&gt; !c.is(Measure.class) || !c.getName().contains(&quot;#&quot;))</span>
+<span class="nc" id="L382">					.reduce(new Builder(), Builder::addComponent, Builder::merge)</span>
+<span class="nc" id="L383">					.addComponents(applyComponents)</span>
+<span class="nc" id="L384">					.build();</span>
+		}
+<span class="nc bnc" id="L386" title="All 2 branches missed.">		if (calc != null)</span>
+<span class="nc" id="L387">			result = (VTLDataSetMetadata) calc.getMetadata(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">		if (aggr != null)</span>
+<span class="nc" id="L389">			result = (VTLDataSetMetadata) aggr.getMetadata(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">		if (keepOrDrop != null)</span>
+<span class="nc" id="L391">			result = (VTLDataSetMetadata) keepOrDrop.getMetadata(new ThisScope(result, session));</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">		if (rename != null)</span>
+<span class="nc" id="L393">			result = (VTLDataSetMetadata) rename.getMetadata(new ThisScope(result, session));</span>
+
+<span class="nc" id="L395">		Optional&lt;String&gt; ambiguousComponent = result.stream()</span>
+<span class="nc" id="L396">			.map(DataStructureComponent::getName)</span>
+<span class="nc" id="L397">			.filter(n -&gt; n.contains(&quot;#&quot;))</span>
+<span class="nc" id="L398">			.findAny()</span>
+<span class="nc" id="L399">			.map(n -&gt; n.replaceAll(&quot;^.*#&quot;, &quot;&quot;));</span>
+		
+<span class="nc bnc" id="L401" title="All 2 branches missed.">		if (ambiguousComponent.isPresent())</span>
+<span class="nc" id="L402">			throw new VTLAmbiguousComponentException(ambiguousComponent.get(), result.stream()</span>
+<span class="nc" id="L403">					.filter(c -&gt; c.getName().endsWith(&quot;#&quot; + ambiguousComponent.get()))</span>
+<span class="nc" id="L404">					.collect(toSet()));</span>
+		
+<span class="nc" id="L406">		return result;</span>
+	}
+	
+	private Optional&lt;JoinOperand&gt; isCaseAorB1(Map&lt;JoinOperand, VTLDataSetMetadata&gt; datasetsMeta)
+	{
+		// Case A: One dataset must contain the identifiers of all the others
+<span class="nc" id="L412">		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; allIDs = datasetsMeta.values().stream()</span>
+<span class="nc" id="L413">				.flatMap(ds -&gt; ds.getComponents(Identifier.class).stream())</span>
+<span class="nc" id="L414">				.collect(Collectors.toSet());</span>
+		
+<span class="nc" id="L416">		Optional&lt;JoinOperand&gt; max = datasetsMeta.entrySet().stream()</span>
+<span class="nc" id="L417">				.filter(Utils.byValue(ds -&gt; ds.containsAll(allIDs)))</span>
+<span class="nc" id="L418">				.map(Entry::getKey)</span>
+<span class="nc" id="L419">				.findFirst();</span>
+		
+<span class="nc bnc" id="L421" title="All 2 branches missed.">		if (!max.isPresent())</span>
+		{
+<span class="nc bnc" id="L423" title="All 2 branches missed.">			if (usingNames.isEmpty())</span>
+			{
+				// In Case A but conditions not fulfilled
+<span class="nc" id="L426">				UnsupportedOperationException e = new UnsupportedOperationException(&quot;In inner join without using clause, one dataset identifier set must contain identifiers of all other datasets.&quot;);</span>
+<span class="nc" id="L427">				LOGGER.error(&quot;Error in &quot; + this, e);</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">				for (Entry&lt;JoinOperand, VTLDataSetMetadata&gt; operand: datasetsMeta.entrySet())</span>
+<span class="nc" id="L429">					LOGGER.debug(&quot;Operand {} is {}&quot;, operand.getKey().getId(), operand.getValue().getComponents(Identifier.class).toString());</span>
+<span class="nc" id="L430">				throw e;</span>
+			}
+			else
+				// Not in case A or B1
+<span class="nc" id="L434">				return Optional.empty();</span>
+		}
+<span class="nc bnc" id="L436" title="All 2 branches missed.">		else if (usingNames.isEmpty())</span>
+		{
+			// In case B1 
+<span class="nc" id="L439">			Long howMany = (long) datasetsMeta.size();</span>
+<span class="nc" id="L440">			Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; commonIDs = datasetsMeta.values().stream()</span>
+<span class="nc" id="L441">					.flatMap(ds -&gt; ds.getComponents(Identifier.class).stream())</span>
+<span class="nc" id="L442">					.collect(groupingByConcurrent(c -&gt; c, counting()))</span>
+<span class="nc" id="L443">					.entrySet().stream()</span>
+<span class="nc" id="L444">					.filter(byValue(howMany::equals))</span>
+<span class="nc" id="L445">					.map(Entry::getKey)</span>
+<span class="nc" id="L446">					.collect(toSet());</span>
+
+<span class="nc" id="L448">			Set&lt;DataStructureComponent&lt;?,?,?&gt;&gt; using = datasetsMeta.values().stream()</span>
+<span class="nc" id="L449">					.flatMap(ds -&gt; ds.getComponents(usingNames).stream())</span>
+<span class="nc" id="L450">					.collect(toSet());</span>
+			
+<span class="nc bnc" id="L452" title="All 2 branches missed.">			if (!commonIDs.containsAll(using))</span>
+			{
+				// Case B1 conditions not fulfilled
+<span class="nc" id="L455">				UnsupportedOperationException e = new UnsupportedOperationException(&quot;In inner join with using clause, named ids must be common to all datasets.&quot;);</span>
+<span class="nc" id="L456">				LOGGER.error(&quot;Error in &quot; + this, e);</span>
+<span class="nc" id="L457">				LOGGER.debug(&quot;Using &quot; + using);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">				for (VTLDataSetMetadata dataset: datasetsMeta.values())</span>
+<span class="nc" id="L459">					LOGGER.debug(dataset.getComponents(Identifier.class).toString());</span>
+<span class="nc" id="L460">				throw e;</span>
+			}
+			else
+				// B1 fulfilled
+<span class="nc" id="L464">				return max;</span>
+		}
+		else
+			// case A fulfilled
+<span class="nc" id="L468">			return max;</span>
+	}
+
+	private Optional&lt;JoinOperand&gt; isCaseB2(Optional&lt;JoinOperand&gt; caseAorB1, Map&lt;JoinOperand, VTLDataSetMetadata&gt; datasetsMeta)
+	{
+<span class="nc bnc" id="L473" title="All 2 branches missed.">		if (caseAorB1.isPresent())</span>
+<span class="nc" id="L474">			return caseAorB1;</span>
+		
+<span class="nc" id="L476">		throw new UnsupportedOperationException(&quot;Case B2 not implemented&quot;);</span>
+//		
+//		if (datasetsMeta.size() &lt; 2)
+//			throw new VTLException(&quot;Expected at least 2 datasets in join.&quot;);
+//		
+//		Iterator&lt;VTLDataSetMetadata&gt; iterator = datasetsMeta.values().iterator();
+//		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; first = iterator.next().getComponents(Identifier.class);
+//		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; second = iterator.next().getComponents(Identifier.class);
+//		VTLDataSetMetadata max = null;
+//		for (VTLDataSetMetadata dataset: datasetsMeta.values())
+//		{
+//			Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; ids = dataset.getComponents(Identifier.class);
+//
+//			if (!ids.equals(first) &amp;&amp; !ids.equals(second))
+//			{
+//				// Case B2 conditions not fulfilled
+//				UnsupportedOperationException e = new UnsupportedOperationException(&quot;In inner join with using clause, all datasets but one must have the same identifiers.&quot;);
+//				LOGGER.error(&quot;Error in &quot; + this, e);
+//				for (VTLDataSetMetadata dataset2: datasetsMeta.values())
+//					LOGGER.debug(dataset2.getComponents(Identifier.class).toString());
+//				throw e;
+//			}
+//			else
+//				max = max != null ? max : ids.equals(first) ? second : first;
+//		}
+//		
+//		// Verify that reference dataset contains all the using components
+//		if (max.getComponents(usingNames).size() != usingNames.size())
+//		{
+//			// Case B2 conditions not fulfilled
+//			UnsupportedOperationException e = new UnsupportedOperationException(&quot;In inner join with using clause, the reference dataset must contain all used components.&quot;);
+//			LOGGER.error(&quot;Error in {}&quot; + this, e);
+//			LOGGER.debug(&quot;Using {}&quot;, usingNames);
+//			LOGGER.debug(&quot;But reference dataset structure is {}&quot;, max);
+//			throw e;
+//		}
+//		
+//		for (Entry&lt;JoinOperand, VTLDataSetMetadata&gt; dataset: datasetsMeta.entrySet())
+//			if (max != dataset.getValue() &amp;&amp; dataset.getValue().getComponents(usingNames, Identifier.class).size() != usingNames.size())
+//			{
+//				// Case B2 conditions not fulfilled
+//				UnsupportedOperationException e = new UnsupportedOperationException(&quot;In inner join with using clause, dataset &quot; + dataset.getKey().getId() + &quot; must contain all used components as identifiers.&quot;);
+//				LOGGER.error(&quot;Error in {}&quot; + this, e);
+//				LOGGER.debug(&quot;Using {}&quot;, usingNames);
+//				LOGGER.debug(&quot;But dataset {} is {}&quot;, dataset.getKey().getId(), dataset.getValue());
+//				throw e;
+//			}
+//		
+//		return datasetsMeta.entrySet().stream()
+//				.filter(byValue(max::equals))
+//				.map(Entry::getKey)
+//				.findFirst();
+	}
+	
+	private VTLDataSetMetadata joinStructures(Map&lt;JoinOperand,VTLDataSetMetadata&gt; datasetsMeta, Optional&lt;?&gt; caseAorB1, Optional&lt;?&gt; caseB2)
+	{
+//		List&lt;Entry&lt;String, VTLDataSetMetadata&gt;&gt; dataSets = operands.stream()
+//				.map(op -&gt; new SimpleEntry&lt;&gt;(op.getId(), datasetsMeta.get(op)))
+//				.collect(toList());
+	
+<span class="nc bnc" id="L536" title="All 2 branches missed.">		if (caseAorB1.isPresent())</span>
+		{
+<span class="nc" id="L538">			Set&lt;DataStructureComponent&lt;?,?,?&gt;&gt; using = datasetsMeta.values().stream()</span>
+<span class="nc" id="L539">					.flatMap(ds -&gt; ds.getComponents(usingNames).stream())</span>
+<span class="nc" id="L540">					.collect(toSet());</span>
+			
+			// Case A: rename all measures and attributes with the same name 
+			// Case B1: rename all components with the same name except those in the using clause  
+<span class="nc" id="L544">			ConcurrentMap&lt;DataStructureComponent&lt;?, ?, ?&gt;, Boolean&gt; unique = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L545">			Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; toBeRenamed = datasetsMeta.entrySet().stream()</span>
+<span class="nc" id="L546">					.map(Entry::getValue)</span>
+<span class="nc" id="L547">					.flatMap(d -&gt; d.stream())</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">					.filter(c -&gt; unique.putIfAbsent(c, TRUE) != null)</span>
+<span class="nc bnc" id="L549" title="All 8 branches missed.">					.filter(c -&gt; using.isEmpty() &amp;&amp; c.is(NonIdentifier.class) || !using.isEmpty() &amp;&amp; !using.contains(c))</span>
+<span class="nc" id="L550">					.collect(toSet());</span>
+			
+<span class="nc" id="L552">			LOGGER.debug(&quot;Inner join renames: {}&quot;, toBeRenamed);</span>
+			
+<span class="nc" id="L554">			Builder builder = new Builder();</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">			for (Entry&lt;JoinOperand, VTLDataSetMetadata&gt; e: datasetsMeta.entrySet())</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">				for (DataStructureComponent&lt;?, ?, ?&gt; c: e.getValue())</span>
+<span class="nc bnc" id="L557" title="All 2 branches missed.">					if (toBeRenamed.contains(c))</span>
+<span class="nc" id="L558">						builder.addComponent(c.rename(e.getKey().getId() + &quot;#&quot; + c.getName()));</span>
+					else
+<span class="nc" id="L560">						builder.addComponent(c);</span>
+
+<span class="nc" id="L562">			return builder.build();</span>
+		}
+		else
+<span class="nc" id="L565">			throw new UnsupportedOperationException();</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L571">		return &quot;inner_join(&quot; + operands.stream().map(Object::toString).collect(joining(&quot;, &quot;))</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">				+ (usingNames.isEmpty() ? &quot;&quot; : &quot; using &quot; + usingNames.stream().collect(joining(&quot;, &quot;)))</span>
+				+ &quot;)&quot;;
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

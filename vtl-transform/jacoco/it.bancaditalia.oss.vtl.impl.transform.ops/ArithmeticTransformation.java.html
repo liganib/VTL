@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArithmeticTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">ArithmeticTransformation.java</span></div><h1>ArithmeticTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.INTEGER;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.INTEGERDS;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.NUMBER;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.NUMBERDS;
+import static it.bancaditalia.oss.vtl.util.Utils.reverseIf;
+import static it.bancaditalia.oss.vtl.util.Utils.splitting;
+import static it.bancaditalia.oss.vtl.util.Utils.splittingConsumer;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.exceptions.VTLMissingComponentsException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.types.data.IntegerValue;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.impl.types.operators.ArithmeticOperator;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataPoint;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.NumberValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.domain.NumberDomain;
+import it.bancaditalia.oss.vtl.model.domain.NumberDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class ArithmeticTransformation extends BinaryTransformation
+{
+	private static final long serialVersionUID = 1L;
+	@SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L75">	private final static Logger LOGGER = LoggerFactory.getLogger(ArithmeticTransformation.class);</span>
+	private final ArithmeticOperator operator;
+
+	private VTLDataSetMetadata metadata;
+	
+	public ArithmeticTransformation(ArithmeticOperator operator, Transformation left, Transformation right)
+	{
+<span class="fc" id="L82">		super(left, right);</span>
+
+<span class="fc" id="L84">		this.operator = operator;</span>
+<span class="fc" id="L85">	}</span>
+
+	@Override
+	protected VTLValue evalTwoScalars(ScalarValue&lt;?, ?, ?&gt; left, ScalarValue&lt;?, ?, ?&gt; right)
+	{
+<span class="nc bnc" id="L90" title="All 4 branches missed.">		if (left instanceof IntegerValue &amp;&amp; right instanceof IntegerValue)</span>
+<span class="nc" id="L91">			return getOperator().applyAsInt((NumberValue&lt;?, ?, ?&gt;) left, (NumberValue&lt;?, ?, ?&gt;) right);</span>
+		else
+<span class="nc" id="L93">			return getOperator().applyAsDouble((NumberValue&lt;?, ?, ?&gt;) left, (NumberValue&lt;?, ?, ?&gt;) right);</span>
+	}
+
+	@Override
+	protected VTLValue evalDatasetWithScalar(boolean datasetIsLeftOp, DataSet dataset, ScalarValue&lt;?, ?, ?&gt; scalar)
+	{
+<span class="nc" id="L99">		Set&lt;String&gt; measureNames = dataset.getComponents(Measure.class, NUMBERDS).stream().map(DataStructureComponent::getName).collect(toSet());</span>
+
+<span class="nc" id="L101">		Predicate&lt;String&gt; bothIntegers = name -&gt; metadata.getComponent(name)</span>
+<span class="nc" id="L102">					.map(DataStructureComponent::getDomain)</span>
+<span class="nc" id="L103">					.map(c -&gt; INTEGERDS.isAssignableFrom(c))</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">					.orElseThrow(() -&gt; new VTLMissingComponentsException(name, metadata)) </span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">				&amp;&amp; INTEGERDS.isAssignableFrom(scalar.getDomain());</span>
+		
+		// must remember which is the left operand because some operators are not commutative
+<span class="nc" id="L108">		BiFunction&lt;? super DataPoint, ? super String, ScalarValue&lt;?, ?, ?&gt;&gt; finalOperator = (dp, name) -&gt; </span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">			reverseIf(!datasetIsLeftOp, bothIntegers.test(name) ? getOperator()::applyAsInt : getOperator()::applyAsDouble)</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">				.apply(dp.get(dataset.getComponent(name)</span>
+<span class="nc" id="L111">						.map(c -&gt; c.as(NUMBERDS))</span>
+<span class="nc" id="L112">						.orElseThrow(() -&gt; new VTLMissingComponentsException(name, metadata))</span>
+						), scalar);
+		
+<span class="nc" id="L115">		return dataset.mapKeepingKeys(metadata, dp -&gt; Utils.getStream(measureNames)</span>
+<span class="nc" id="L116">				.collect(Collectors.toConcurrentMap(name -&gt; metadata.getComponent(name)</span>
+<span class="nc" id="L117">						.map(c -&gt; c.as(Measure.class))</span>
+<span class="nc" id="L118">						.orElseThrow(() -&gt; new VTLMissingComponentsException(name, metadata)), name -&gt; finalOperator.apply(dp, name))));</span>
+	}
+
+	@Override
+	protected VTLValue evalTwoDatasets(DataSet left, DataSet right)
+	{
+		// index (as right operand) the one with less keys and stream the other (as left operand)
+<span class="fc" id="L125">		boolean swap = left.getComponents(Identifier.class).containsAll(right.getComponents(Identifier.class));</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		DataSet streamed = swap ? right : left;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		DataSet indexed = swap ? left : right;</span>
+
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">		if (metadata == null)</span>
+		{
+<span class="nc" id="L131">			DataStructureComponent&lt;Measure, NumberDomainSubset&lt;NumberDomain&gt;, NumberDomain&gt; leftMeasure = streamed.getComponents(Measure.class, NUMBERDS).iterator().next();</span>
+<span class="nc" id="L132">			DataStructureComponent&lt;Measure, NumberDomainSubset&lt;NumberDomain&gt;, NumberDomain&gt; rightMeasure = indexed.getComponents(Measure.class, NUMBERDS).iterator().next();</span>
+			DataStructureComponentImpl&lt;Measure, ? extends NumberDomainSubset&lt;? extends NumberDomain&gt;, ? extends NumberDomain&gt; resultComp;
+<span class="nc bnc" id="L134" title="All 4 branches missed.">			if (INTEGERDS.isAssignableFrom(leftMeasure.getDomain()) &amp;&amp; INTEGERDS.isAssignableFrom(rightMeasure.getDomain()))</span>
+<span class="nc" id="L135">				resultComp = new DataStructureComponentImpl&lt;&gt;(INTEGERDS.getVarName(), Measure.class, INTEGERDS);</span>
+			else
+<span class="nc" id="L137">				resultComp = new DataStructureComponentImpl&lt;&gt;(NUMBERDS.getVarName(), Measure.class, NUMBERDS);</span>
+			
+<span class="nc" id="L139">			VTLDataSetMetadata newStructure = new Builder(streamed.getComponents(Identifier.class))</span>
+<span class="nc" id="L140">					.addComponent(resultComp)</span>
+<span class="nc" id="L141">					.build();</span>
+			
+<span class="nc" id="L143">			boolean intResult = INTEGERDS.isAssignableFrom(resultComp.getDomain());</span>
+<span class="nc" id="L144">			return streamed.filteredMappedJoin(newStructure, indexed, (dpl, dpr) -&gt; true /* no filter */, (dpl, dpr) -&gt; new DataPointBuilder()</span>
+<span class="nc" id="L145">						.add(resultComp, compute(swap, intResult, dpl.get(leftMeasure), dpr.get(rightMeasure)))</span>
+<span class="nc" id="L146">						.addAll(dpl.getValues(Identifier.class))</span>
+<span class="nc" id="L147">						.addAll(dpr.getValues(Identifier.class))</span>
+<span class="nc" id="L148">						.build(newStructure));</span>
+		}
+		else
+		{
+<span class="fc" id="L152">			Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; resultMeasures = metadata.getComponents(Measure.class);</span>
+			// Scan the dataset with less identifiers and find the matches
+			
+<span class="fc" id="L155">			return streamed.filteredMappedJoin(metadata, indexed, (dpl, dpr) -&gt; true /* no filter */,</span>
+<span class="fc" id="L156">				(dpl, dpr) -&gt; new DataPointBuilder(resultMeasures.stream()</span>
+<span class="fc" id="L157">						.map(compToCalc -&gt; new SimpleEntry&lt;&gt;(compToCalc, compute(swap, INTEGERDS.isAssignableFrom(compToCalc.getDomain()), </span>
+<span class="fc" id="L158">								dpl.get(streamed.getComponent(compToCalc.getName()).get()), </span>
+<span class="fc" id="L159">								dpr.get(indexed.getComponent(compToCalc.getName()).get()))))</span>
+<span class="fc" id="L160">						.collect(Utils.entriesToMap()))		</span>
+<span class="fc" id="L161">					.addAll(dpl.getValues(Identifier.class))</span>
+<span class="fc" id="L162">					.addAll(dpr.getValues(Identifier.class))</span>
+					//.add(resultMeasure, finalOperator.apply(dp1.get(indexedMeasure), dp2.get(streamedMeasure)))
+<span class="fc" id="L164">					.build(metadata));</span>
+		}
+	}
+
+	// take account of the order of parameters because some operators are not commutative 
+	private ScalarValue&lt;?, ?, ?&gt; compute(boolean swap, boolean intResult, ScalarValue&lt;?, ?, ?&gt; left, ScalarValue&lt;?, ?, ?&gt; right)
+	{
+<span class="fc bfc" id="L171" title="All 4 branches covered.">		if (left instanceof NullValue || right instanceof NullValue)</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			return NullValue.instance((NumberDomainSubset&lt;? extends NumberDomain&gt;)(intResult ? INTEGERDS : NUMBERDS));</span>
+		
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		return reverseIf(swap, intResult</span>
+<span class="fc" id="L175">					? getOperator()::applyAsInt </span>
+<span class="fc" id="L176">					: getOperator()::applyAsDouble)</span>
+<span class="fc" id="L177">			.apply((NumberValue&lt;?, ?, ?&gt;) left, (NumberValue&lt;?, ?, ?&gt;) right);</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="fc" id="L183">		VTLValueMetadata left = leftOperand.getMetadata(session), right = rightOperand.getMetadata(session);</span>
+		
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">		if (left instanceof VTLDataSetMetadata &amp;&amp; right instanceof VTLDataSetMetadata)</span>
+		{
+<span class="fc" id="L187">			VTLDataSetMetadata leftData = (VTLDataSetMetadata) left, rightData = (VTLDataSetMetadata) right;</span>
+			
+<span class="fc" id="L189">			final Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; leftMeasures = leftData.getComponents(Measure.class);</span>
+<span class="fc" id="L190">			final Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; rightMeasures = rightData.getComponents(Measure.class);</span>
+			
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">			if (leftMeasures.size() == 0)</span>
+<span class="nc" id="L193">				throw new VTLExpectedComponentException(Measure.class, NUMBERDS, leftMeasures);</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">			if (rightMeasures.size() == 0)</span>
+<span class="nc" id="L195">				throw new VTLExpectedComponentException(Measure.class, NUMBERDS, rightMeasures);</span>
+
+<span class="fc" id="L197">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; firstLeft = leftMeasures.iterator().next();</span>
+<span class="fc" id="L198">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; firstRight = rightMeasures.iterator().next();</span>
+			
+<span class="fc" id="L200">			ValueDomainSubset&lt;?&gt; firstLeftDomain = firstLeft.getDomain();</span>
+<span class="fc" id="L201">			ValueDomainSubset&lt;?&gt; firstRightDomain = firstRight.getDomain();</span>
+			
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">			boolean areFirstCompatible = !firstLeft.getName().equals(firstRight.getName()) &amp;&amp; </span>
+<span class="pc bnc" id="L204" title="All 4 branches missed.">					(firstLeftDomain.isAssignableFrom(firstRightDomain) || firstRight.getDomain().isAssignableFrom(firstLeft.getDomain()));</span>
+			
+<span class="pc bpc" id="L206" title="5 of 6 branches missed.">			if (areFirstCompatible &amp;&amp; leftMeasures.size() == 1 &amp;&amp; rightMeasures.size() == 1)</span>
+<span class="nc" id="L207">				return NUMBER;</span>
+
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">			if (!leftData.getComponents(Identifier.class).containsAll(rightData.getComponents(Identifier.class))</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">					&amp;&amp; !rightData.getComponents(Identifier.class).containsAll(leftData.getComponents(Identifier.class)))</span>
+<span class="nc" id="L211">				throw new UnsupportedOperationException(&quot;One dataset must have all the identifiers of the other.&quot;);</span>
+
+<span class="fc" id="L213">			Map&lt;String, ? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; leftMeasuresMap = Utils.getStream(leftMeasures).collect(toMap(DataStructureComponent::getName, identity()));</span>
+<span class="fc" id="L214">			Map&lt;String, ? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; rightMeasuresMap = Utils.getStream(rightMeasures).collect(toMap(DataStructureComponent::getName, identity()));</span>
+			
+<span class="fc" id="L216">			Set&lt;DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; measures = Stream.concat(leftMeasuresMap.keySet().stream(), rightMeasuresMap.keySet().stream())</span>
+<span class="fc" id="L217">				.map(name -&gt; new SimpleEntry&lt;&gt;(leftMeasuresMap.get(name), rightMeasuresMap.get(name)))</span>
+<span class="fc" id="L218">				.peek(splittingConsumer((lm, rm) -&gt; </span>
+					{
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">						if (lm == null)</span>
+<span class="nc" id="L221">							throw new VTLMissingComponentsException(rm, leftMeasures);</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">						if (rm == null)</span>
+<span class="nc" id="L223">							throw new VTLMissingComponentsException(lm, rightMeasures);</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">						if (!NUMBERDS.isAssignableFrom(lm.getDomain()))</span>
+<span class="nc" id="L225">							throw new UnsupportedOperationException(&quot;Expected numeric measure but found: &quot; + lm);</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">						if (!NUMBERDS.isAssignableFrom(rm.getDomain()))</span>
+<span class="nc" id="L227">							throw new UnsupportedOperationException(&quot;Expected numeric measure but found: &quot; + rm);</span>
+<span class="fc" id="L228">					}))</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">				.map(splitting((lm, rm) -&gt; INTEGERDS.isAssignableFrom(lm.getDomain()) </span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">						? INTEGERDS.isAssignableFrom(rm.getDomain())</span>
+						? lm : rm : lm))
+<span class="fc" id="L232">				.collect(toSet());</span>
+			
+<span class="fc" id="L234">			return metadata = new Builder().addComponents(leftData.getComponents(Identifier.class))</span>
+<span class="fc" id="L235">					.addComponents(rightData.getComponents(Identifier.class))</span>
+<span class="fc" id="L236">					.addComponents(measures)</span>
+<span class="fc" id="L237">					.build();</span>
+		}
+<span class="nc bnc" id="L239" title="All 4 branches missed.">		else if (left instanceof VTLScalarValueMetadata &amp;&amp; right instanceof VTLScalarValueMetadata)</span>
+		{
+<span class="nc" id="L241">			ValueDomainSubset&lt;?&gt; domainLeft = ((VTLScalarValueMetadata&lt;?&gt;) left).getDomain();</span>
+<span class="nc" id="L242">			ValueDomainSubset&lt;?&gt; domainRight = ((VTLScalarValueMetadata&lt;?&gt;) right).getDomain();</span>
+<span class="nc bnc" id="L243" title="All 4 branches missed.">			if (INTEGERDS.isAssignableFrom(domainLeft) &amp;&amp; INTEGERDS.isAssignableFrom(domainRight))</span>
+<span class="nc" id="L244">				return INTEGER;</span>
+<span class="nc bnc" id="L245" title="All 4 branches missed.">			else if (NUMBERDS.isAssignableFrom(domainLeft) &amp;&amp; NUMBERDS.isAssignableFrom(domainRight))</span>
+<span class="nc" id="L246">				return NUMBER;</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">			else if (!NUMBERDS.isAssignableFrom(domainLeft))</span>
+<span class="nc" id="L248">				throw new VTLIncompatibleTypesException(getOperator().toString(), NUMBERDS, domainLeft);</span>
+			else 
+<span class="nc" id="L250">				throw new VTLIncompatibleTypesException(getOperator().toString(), NUMBERDS, domainRight);</span>
+		}
+		else 
+		{
+<span class="nc bnc" id="L254" title="All 2 branches missed.">			metadata = (VTLDataSetMetadata)(left instanceof VTLDataSetMetadata ? left : right);</span>
+			
+<span class="nc bnc" id="L256" title="All 2 branches missed.">			if (metadata.getComponents(Measure.class).size() == 0)</span>
+<span class="nc" id="L257">				throw new UnsupportedOperationException(&quot;Expected at least 1 measure but found none.&quot;);</span>
+<span class="nc bnc" id="L258" title="All 4 branches missed.">			if (metadata.getComponents(Measure.class).stream().anyMatch(c -&gt; !NUMBERDS.isAssignableFrom(c.getDomain())))</span>
+<span class="nc" id="L259">				throw new UnsupportedOperationException(&quot;Expected only numeric measures but found: &quot; + metadata.getComponents(Measure.class));</span>
+<span class="nc bnc" id="L260" title="All 6 branches missed.">			if (left instanceof VTLScalarValueMetadata &amp;&amp; INTEGERDS.isAssignableFrom(((VTLScalarValueMetadata&lt;?&gt;) left).getDomain())</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">					|| right instanceof VTLScalarValueMetadata &amp;&amp; INTEGERDS.isAssignableFrom(((VTLScalarValueMetadata&lt;?&gt;) right).getDomain()))</span>
+<span class="nc" id="L262">				return metadata;</span>
+			
+			// Sum to float, convert integer measures to floating point
+<span class="nc" id="L265">			return metadata = metadata.stream()</span>
+<span class="nc bnc" id="L266" title="All 4 branches missed.">					.map(c -&gt; c.is(Measure.class) &amp;&amp; INTEGERDS.isAssignableFrom(c.getDomain()) </span>
+<span class="nc" id="L267">							? new DataStructureComponentImpl&lt;&gt;(c.getName(), Measure.class, NUMBERDS) : c)</span>
+<span class="nc" id="L268">					.reduce(new Builder(), Builder::addComponent, Builder::merge)</span>
+<span class="nc" id="L269">					.build();</span>
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc bnc" id="L276" title="All 2 branches missed.">		if (getOperator().isInfix())</span>
+<span class="nc" id="L277">			return leftOperand.toString() + getOperator() + rightOperand;</span>
+		else
+<span class="nc" id="L279">			return getOperator() + &quot;(&quot; + leftOperand.toString() + &quot;, &quot; + rightOperand + &quot;)&quot;;</span>
+	}
+
+	public ArithmeticOperator getOperator()
+	{
+<span class="fc" id="L284">		return operator;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

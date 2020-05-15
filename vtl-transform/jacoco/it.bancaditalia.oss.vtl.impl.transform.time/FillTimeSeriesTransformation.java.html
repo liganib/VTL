@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FillTimeSeriesTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.time</a> &gt; <span class="el_source">FillTimeSeriesTransformation.java</span></div><h1>FillTimeSeriesTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.time;
+
+import static it.bancaditalia.oss.vtl.impl.transform.time.FillTimeSeriesTransformation.FillMode.ALL;
+import static it.bancaditalia.oss.vtl.impl.transform.time.FillTimeSeriesTransformation.FillMode.SINGLE;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.TIMEDS;
+import static java.util.stream.Collectors.toList;
+
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.impl.transform.dataset.LightFDataSet;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.data.TimeValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.NonIdentifier;
+import it.bancaditalia.oss.vtl.model.data.DataPoint;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.domain.TimeDomain;
+import it.bancaditalia.oss.vtl.model.domain.TimeDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class FillTimeSeriesTransformation extends TimeSeriesTransformation
+{
+	private static final long serialVersionUID = 1L;
+<span class="nc" id="L61">	private final static Logger LOGGER = LoggerFactory.getLogger(FillTimeSeriesTransformation.class);</span>
+
+<span class="nc" id="L63">	public enum FillMode</span>
+	{
+<span class="nc" id="L65">		ALL(&quot;all&quot;), SINGLE(&quot;single&quot;);</span>
+
+		private String name;
+
+		private FillMode(String name)
+<span class="nc" id="L70">		{</span>
+<span class="nc" id="L71">			this.name = name;</span>
+<span class="nc" id="L72">		}</span>
+		
+		@Override
+		public String toString()
+		{
+<span class="nc" id="L77">			return name;</span>
+		}
+	}
+
+	private final FillMode mode;
+
+	public FillTimeSeriesTransformation(Transformation operand, FillMode mode)
+	{
+<span class="nc" id="L85">		super(operand);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		this.mode = mode == null ? ALL : mode;</span>
+<span class="nc" id="L87">	}</span>
+
+	@Override
+	protected VTLValue evalOnDataset(DataSet ds)
+	{
+<span class="nc" id="L92">		final VTLDataSetMetadata structure = ds.getDataStructure();</span>
+<span class="nc" id="L93">		final DataStructureComponent&lt;Identifier, TimeDomainSubset&lt;TimeDomain&gt;, TimeDomain&gt; timeID = ds.getComponents(Identifier.class, TIMEDS).iterator().next();</span>
+<span class="nc" id="L94">		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; temp = new HashSet&lt;&gt;(ds.getComponents(Identifier.class));</span>
+<span class="nc" id="L95">		temp.remove(timeID);</span>
+<span class="nc" id="L96">		final Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; ids = temp;</span>
+<span class="nc" id="L97">		final ConcurrentMap&lt;DataStructureComponent&lt;NonIdentifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; nullFilling = ds.getComponents(NonIdentifier.class).stream()</span>
+<span class="nc" id="L98">				.collect(Collectors.toConcurrentMap(UnaryOperator.identity(), c -&gt; NullValue.instance(c.getDomain())));</span>
+		
+<span class="nc" id="L100">		final Comparator&lt;DataPoint&gt; comparator = (dp1, dp2) -&gt; {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">			for (DataStructureComponent&lt;Identifier, ?, ?&gt; id: ids)</span>
+			{
+<span class="nc" id="L103">				int c = dp1.get(id).compareTo(dp2.get(id));</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">				if (c != 0)</span>
+<span class="nc" id="L105">					return c;</span>
+<span class="nc" id="L106">			}</span>
+			
+<span class="nc" id="L108">			return dp1.get(timeID).compareTo(dp2.get(timeID));</span>
+		};
+		
+		TimeValue&lt;?, ?, ?&gt; min, max;
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (mode == SINGLE)</span>
+		{
+<span class="nc" id="L114">			min = null;</span>
+<span class="nc" id="L115">			max = null;</span>
+		}
+		else
+		{
+<span class="nc" id="L119">			min = ds.stream().map(dp -&gt; (TimeValue&lt;?, ?, ?&gt;) dp.get(timeID)).min(TimeValue::compareTo).orElseThrow(() -&gt; new IllegalStateException(&quot;All time series are empty.&quot;));</span>
+<span class="nc" id="L120">			max = ds.stream().map(dp -&gt; (TimeValue&lt;?, ?, ?&gt;) dp.get(timeID)).max(TimeValue::compareTo).orElseThrow(() -&gt; new IllegalStateException(&quot;All time series are empty.&quot;));</span>
+		}
+
+<span class="nc" id="L123">		return new LightFDataSet&lt;&gt;(structure, dataset -&gt; dataset.streamByKeys(ids, (idValues, group) -&gt; {</span>
+				// Sort each group by time to form a time series
+<span class="nc" id="L125">				List&lt;DataPoint&gt; elements = group.sorted(comparator).collect(toList());</span>
+<span class="nc" id="L126">				LOGGER.debug(&quot;Filling group &quot; + idValues);</span>
+<span class="nc" id="L127">				List&lt;DataPoint&gt; additional = new LinkedList&lt;&gt;();</span>
+				
+				// if min == null: do not add leading null datapoints (single mode)
+<span class="nc" id="L130">				TimeValue&lt;?, ?, ?&gt; previous = min; </span>
+				
+				// leading null elements and current elements
+<span class="nc bnc" id="L133" title="All 2 branches missed.">				for (DataPoint current: elements)</span>
+				{
+<span class="nc" id="L135">					TimeValue&lt;?, ?, ?&gt; lastTime = (TimeValue&lt;?, ?, ?&gt;) current.get(timeID);</span>
+					// find and fill holes
+<span class="nc bnc" id="L137" title="All 2 branches missed.">					if (previous != null)</span>
+					{
+<span class="nc" id="L139">						TimeValue&lt;?, ?, ?&gt; prevTime = previous.increment(1);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">						while (lastTime.compareTo(prevTime) &gt; 0)</span>
+						{
+<span class="nc" id="L142">							LOGGER.debug(&quot;Filling space between &quot; + prevTime + &quot; and &quot; + lastTime);</span>
+<span class="nc" id="L143">							DataPoint fillingDataPoint = new DataPointImpl.DataPointBuilder(idValues)</span>
+<span class="nc" id="L144">								.add(timeID, prevTime)</span>
+<span class="nc" id="L145">								.addAll(nullFilling)</span>
+<span class="nc" id="L146">								.build(structure);</span>
+<span class="nc" id="L147">							additional.add(fillingDataPoint);</span>
+<span class="nc" id="L148">							prevTime = prevTime.increment(1);</span>
+<span class="nc" id="L149">						}</span>
+					}
+
+<span class="nc" id="L152">					previous = (TimeValue&lt;?, ?, ?&gt;) current.get(timeID);</span>
+<span class="nc" id="L153">				}</span>
+
+				// fill trailing holes
+<span class="nc bnc" id="L156" title="All 2 branches missed.">				if (mode == ALL)</span>
+				{
+<span class="nc" id="L158">					TimeValue&lt;?, ?, ?&gt; prevTime = previous;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">					while (max.compareTo(prevTime) &gt; 0)</span>
+					{
+<span class="nc" id="L161">						LOGGER.debug(&quot;Filling space between &quot; + prevTime + &quot; and &quot; + max);</span>
+<span class="nc" id="L162">						prevTime = prevTime.increment(1);</span>
+<span class="nc" id="L163">						DataPoint fillingDataPoint = new DataPointImpl.DataPointBuilder(idValues)</span>
+<span class="nc" id="L164">							.add(timeID, prevTime)</span>
+<span class="nc" id="L165">							.addAll(nullFilling)</span>
+<span class="nc" id="L166">							.build(structure);</span>
+<span class="nc" id="L167">						additional.add(fillingDataPoint);</span>
+<span class="nc" id="L168">					}</span>
+				}
+				
+<span class="nc" id="L171">				return Stream.concat(Utils.getStream(elements), Utils.getStream(additional));</span>
+<span class="nc" id="L172">			}).flatMap(UnaryOperator.identity()), ds);</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L178">		return &quot;fill_time_series(&quot; + operand + &quot;, &quot; + mode + &quot;)&quot;;</span>
+	}
+
+	@Override
+	protected VTLDataSetMetadata checkIsTimeSeriesDataSet(VTLDataSetMetadata metadata, TransformationScheme scheme)
+	{
+<span class="nc" id="L184">		return metadata;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

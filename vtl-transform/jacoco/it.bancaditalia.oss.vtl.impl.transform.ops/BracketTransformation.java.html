@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BracketTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">BracketTransformation.java</span></div><h1>BracketTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import it.bancaditalia.oss.vtl.impl.transform.clause.DatasetClauseTransformation;
+import it.bancaditalia.oss.vtl.impl.transform.scope.ThisScope;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public class BracketTransformation extends TransformationImpl
+{
+	private static final long serialVersionUID = 1L;
+	private final Transformation operand;
+	private final DatasetClauseTransformation clause;
+	private final String component;
+	
+	public BracketTransformation(Transformation operand, DatasetClauseTransformation clause, String component)
+<span class="nc" id="L43">	{</span>
+<span class="nc" id="L44">		this.operand = operand;</span>
+<span class="nc" id="L45">		this.clause = clause;</span>
+<span class="nc" id="L46">		this.component = component;</span>
+<span class="nc" id="L47">	}</span>
+
+	@Override
+	public boolean isTerminal()
+	{
+<span class="nc" id="L52">		return false;</span>
+	}
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L58">		Set&lt;LeafTransformation&gt; result = new HashSet&lt;&gt;(operand.getTerminals());</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">		if (clause != null) </span>
+<span class="nc" id="L61">			result.addAll(clause.getTerminals());</span>
+
+<span class="nc" id="L63">		return result;</span>
+	}
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		if (clause != null)</span>
+<span class="nc" id="L70">			return clause.eval(new ThisScope(operand.eval(session), session));</span>
+		else
+<span class="nc" id="L72">			return ((DataSet) operand.eval(session)).membership(component);</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc" id="L78">		VTLValueMetadata metadata = operand.getMetadata(session);</span>
+		
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		if (!(metadata instanceof VTLDataSetMetadata))</span>
+<span class="nc" id="L81">			throw new UnsupportedOperationException(&quot;Dataset expected as left operand of []# but found &quot; + metadata);</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (clause != null)</span>
+<span class="nc" id="L84">			return clause.getMetadata(new ThisScope(operand.getMetadata(session), session));</span>
+		else
+<span class="nc" id="L86">			return ((VTLDataSetMetadata) metadata).membership(component);</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc bnc" id="L92" title="All 4 branches missed.">		return operand + (clause != null ? clause.toString() : &quot;&quot;) + (component != null ? &quot;#&quot; + component : &quot;&quot;);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColumnarDataSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-envs</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.environment.dataset</a> &gt; <span class="el_source">ColumnarDataSet.java</span></div><h1>ColumnarDataSet.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.environment.dataset;
+
+import static java.lang.Boolean.TRUE;
+import static java.util.stream.Collectors.groupingByConcurrent;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.impl.types.dataset.AbstractDataSet;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.DataPoint;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class ColumnarDataSet extends AbstractDataSet
+{
+	private static final long serialVersionUID = 1L;
+
+<span class="nc" id="L51">	private static final Logger LOGGER = LoggerFactory.getLogger(ColumnarDataSet.class);</span>
+	
+	private final Map&lt;? extends DataStructureComponent&lt;?, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;[]&gt; columns;
+	private final int nRows;
+
+	public ColumnarDataSet(Map&lt;? extends DataStructureComponent&lt;?, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;[]&gt; columns)
+	{
+<span class="nc" id="L58">		super(new Builder(columns.keySet()).build());</span>
+<span class="nc" id="L59">		this.columns = columns;</span>
+<span class="nc" id="L60">		nRows = columns.values().iterator().next().length;</span>
+		
+<span class="nc" id="L62">		LOGGER.info(&quot;Indexing from source as {}&quot;, getDataStructure());</span>
+<span class="nc" id="L63">	}</span>
+
+	@Override
+	public Stream&lt;DataPoint&gt; getMatching(Map&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; keyValues)
+	{
+<span class="nc" id="L68">		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; idsToMatch = keyValues.keySet();</span>
+<span class="nc" id="L69">		return streamDataPoints()</span>
+<span class="nc" id="L70">				.filter(dp -&gt; keyValues.equals(dp.getValues(idsToMatch, Identifier.class)));</span>
+	}
+
+	@Override
+	public &lt;T&gt; Stream&lt;T&gt; streamByKeys(Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; keys,
+			Map&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; filter,
+			BiFunction&lt;? super Map&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt;, ? super Stream&lt;DataPoint&gt;, T&gt; groupMapper)
+	{
+<span class="nc" id="L78">		ConcurrentMap&lt;Map&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt;, List&lt;DataPoint&gt;&gt; map = streamDataPoints()</span>
+<span class="nc" id="L79">				.filter(dp -&gt; filter.entrySet().containsAll(dp.getValues(filter.keySet(), Identifier.class).entrySet()))</span>
+<span class="nc" id="L80">				.collect(groupingByConcurrent(dp -&gt; dp.getValues(keys, Identifier.class), toList()));</span>
+<span class="nc" id="L81">		return Utils.getStream(map.entrySet())</span>
+<span class="nc" id="L82">			.map(e -&gt; groupMapper.apply(e.getKey(), Utils.getStream(e.getValue())));</span>
+//		int[] res = index.values().stream().reduce(Utils::catArrays).get();
+//		Arrays.sort(res);
+//		
+//		for (int i = 0; i &lt; res.length; i++)
+//			if (res[i] != i)
+//				throw new IllegalStateException();
+//		
+//		return Utils.getStream(index.keySet())
+//				.filter(indexKey -&gt; indexKey.entrySet().containsAll(filter.entrySet()))
+//				.map(indexKey -&gt; new SimpleEntry&lt;&gt;(indexKey, index.get(indexKey)))
+//				.peek(e -&gt; LOGGER.trace(&quot;Retrieving indexes with key {} as {}&quot;, e.getKey(), e.getValue()))
+//				.map(Utils.keepingKey(rows -&gt; Utils.getStream(rows)
+//						.mapToObj(this::mapIndexToDataPoint)))
+//				.map(e -&gt; groupMapper.apply(e.getKey(), e.getValue()
+//						.filter(dp -&gt; dp.matches(filter))));
+	}
+
+	@Override
+	protected Stream&lt;DataPoint&gt; streamDataPoints()
+	{
+<span class="nc" id="L103">		return Utils.getStream(nRows)</span>
+<span class="nc" id="L104">				.mapToObj(this::mapIndexToDataPoint);</span>
+	}
+	
+	private DataPoint mapIndexToDataPoint(int rowIndex)
+	{
+<span class="nc" id="L109">		return Utils.getStream(columns.entrySet())</span>
+<span class="nc" id="L110">				.map(Utils.keepingKey(col -&gt; col[rowIndex]))</span>
+<span class="nc" id="L111">				.reduce(new DataPointBuilder(), DataPointBuilder::add, DataPointBuilder::merge)</span>
+<span class="nc" id="L112">				.build(getDataStructure());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment.exceptions,VTLInputException,17,0,0,0,4,0,2,0,2,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,CSVFileEnvironment,300,534,27,45,45,101,22,27,1,12
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,SDMXEnvironment,635,0,32,0,99,0,43,0,27,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,StandardEnvironmentFactory,98,0,4,0,17,0,6,0,4,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,WorkspaceImpl,93,0,8,0,13,0,10,0,6,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,REnvironment,730,0,86,0,123,0,60,0,11,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment,LocalSDMXEnvironment,133,0,10,0,23,0,9,0,4,0
+vtl-envs,it.bancaditalia.oss.vtl.impl.environment.dataset,ColumnarDataSet,119,0,0,0,20,0,11,0,11,0

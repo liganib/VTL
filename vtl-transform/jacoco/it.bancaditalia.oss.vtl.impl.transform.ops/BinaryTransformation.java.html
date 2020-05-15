@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BinaryTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">BinaryTransformation.java</span></div><h1>BinaryTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Set;
+import java.util.stream.Stream;
+
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLInvalidParameterException;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public abstract class BinaryTransformation extends TransformationImpl
+{
+	private static final long serialVersionUID = 1L;
+	protected final Transformation leftOperand, rightOperand;
+
+	public BinaryTransformation(Transformation left, Transformation right)
+<span class="fc" id="L41">	{</span>
+<span class="fc" id="L42">		this.leftOperand = left;</span>
+<span class="fc" id="L43">		this.rightOperand = right;</span>
+<span class="fc" id="L44">	}</span>
+	
+	@Override
+	public boolean isTerminal()
+	{
+<span class="nc" id="L49">		return false;</span>
+	}
+	
+	@Override
+	public final VTLValue eval(TransformationScheme session)
+	{
+<span class="fc" id="L55">		VTLValue left = leftOperand.eval(session);</span>
+<span class="fc" id="L56">		VTLValue right = rightOperand.eval(session);</span>
+		
+<span class="pc bpc" id="L58" title="2 of 4 branches missed.">		if (left instanceof DataSet &amp;&amp; right instanceof DataSet)</span>
+<span class="fc" id="L59">			return evalTwoDatasets((DataSet) left, (DataSet) right);</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">		else if (left instanceof DataSet &amp;&amp; right instanceof ScalarValue)</span>
+<span class="nc" id="L61">			return evalDatasetWithScalar(true, (DataSet) left, (ScalarValue&lt;?, ?, ?&gt;) right);</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">		else if (left instanceof ScalarValue &amp;&amp; right instanceof DataSet)</span>
+<span class="nc" id="L63">			return evalDatasetWithScalar(false, (DataSet) right, (ScalarValue&lt;?, ?, ?&gt;) left);</span>
+<span class="nc bnc" id="L64" title="All 4 branches missed.">		else if (left instanceof ScalarValue &amp;&amp; right instanceof ScalarValue)</span>
+<span class="nc" id="L65">			return evalTwoScalars((ScalarValue&lt;?, ?, ?&gt;) left, (ScalarValue&lt;?, ?, ?&gt;) right);</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">		else if (left instanceof DataSet || left instanceof ScalarValue)</span>
+<span class="nc" id="L67">			throw new VTLInvalidParameterException(right, DataSet.class, ScalarValue.class);</span>
+		else
+<span class="nc" id="L69">			throw new VTLInvalidParameterException(left, DataSet.class, ScalarValue.class);</span>
+	}
+	
+	protected abstract VTLValue evalTwoScalars(ScalarValue&lt;?, ?, ?&gt; left, ScalarValue&lt;?, ?, ?&gt; right);
+
+	protected abstract VTLValue evalDatasetWithScalar(boolean datasetIsLeftOp, DataSet dataset, ScalarValue&lt;?, ?, ?&gt; scalar);
+
+	protected abstract VTLValue evalTwoDatasets(DataSet left, DataSet right);
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L81">		return Stream.concat(leftOperand.getTerminals().stream(), rightOperand.getTerminals().stream()).collect(toSet()); </span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

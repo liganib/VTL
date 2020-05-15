@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>VTLSessionImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">vtl-coverage</a> &gt; <a href="../index.html" class="el_bundle">vtl-session</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.session</a> &gt; <span class="el_source">VTLSessionImpl.java</span></div><h1>VTLSessionImpl.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.session;
+
+import static it.bancaditalia.oss.vtl.util.Utils.byValue;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.ref.SoftReference;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.engine.Engine;
+import it.bancaditalia.oss.vtl.engine.Statement;
+import it.bancaditalia.oss.vtl.environment.Environment;
+import it.bancaditalia.oss.vtl.environment.Workspace;
+import it.bancaditalia.oss.vtl.exceptions.VTLException;
+import it.bancaditalia.oss.vtl.exceptions.VTLNestedException;
+import it.bancaditalia.oss.vtl.exceptions.VTLUnboundNameException;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.session.MetadataRepository;
+import it.bancaditalia.oss.vtl.session.MetadataRepositoryFactory;
+import it.bancaditalia.oss.vtl.session.VTLSession;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class VTLSessionImpl implements VTLSession
+{
+<span class="nc" id="L69">	private final static Logger LOGGER = LoggerFactory.getLogger(VTLSessionImpl.class);</span>
+
+	private final Engine engine;
+	private final List&lt;Environment&gt; environments;
+	private final Workspace workspace;
+<span class="nc" id="L74">	private final Map&lt;String, SoftReference&lt;VTLValue&gt;&gt; cache = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L75">	private final Map&lt;String, SoftReference&lt;VTLValueMetadata&gt;&gt; metacache = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L76">	private final Map&lt;String, ReentrantLock&gt; cacheLocks = new ConcurrentHashMap&lt;&gt;();</span>
+	private final MetadataRepository repository;
+
+	public VTLSessionImpl(List&lt;Environment&gt; environments, Engine engine)
+<span class="nc" id="L80">	{</span>
+<span class="nc" id="L81">		this.environments = environments;</span>
+<span class="nc" id="L82">		this.engine = engine;</span>
+<span class="nc" id="L83">		this.repository = ServiceLoader.load(MetadataRepositoryFactory.class).iterator().next().getDefaultRepository();</span>
+<span class="nc" id="L84">		this.workspace = environments.stream().filter(Workspace.class::isInstance).map(Workspace.class::cast).findAny()</span>
+<span class="nc" id="L85">				.orElseThrow(() -&gt; new IllegalStateException(&quot;A workspace environment must be supplied.&quot;));</span>
+<span class="nc" id="L86">	}</span>
+
+	@Override
+	public VTLSessionImpl addStatements(String statements)
+	{
+<span class="nc" id="L91">		engine.parseRules(statements).forEach(workspace::addRule);</span>
+<span class="nc" id="L92">		return this;</span>
+	}
+
+	@Override
+	public VTLSessionImpl addStatements(Reader reader) throws IOException
+	{
+<span class="nc" id="L98">		engine.parseRules(reader).forEach(workspace::addRule);</span>
+<span class="nc" id="L99">		return this;</span>
+	}
+
+	@Override
+	public VTLSessionImpl addStatements(InputStream inputStream, Charset charset) throws IOException
+	{
+<span class="nc" id="L105">		engine.parseRules(inputStream, charset).forEach(workspace::addRule);</span>
+<span class="nc" id="L106">		return this;</span>
+	}
+
+	@Override
+	public VTLSessionImpl addStatements(Path path, Charset charset) throws IOException
+	{
+<span class="nc" id="L112">		engine.parseRules(path, charset).forEach(workspace::addRule);</span>
+<span class="nc" id="L113">		return this;</span>
+	}
+
+	@Override
+	public VTLValue resolve(String name2)
+	{
+		final String name;
+<span class="nc bnc" id="L120" title="All 2 branches missed.">		if (name2.matches(&quot;'.*'&quot;))</span>
+<span class="nc" id="L121">			name = name2.replaceAll(&quot;'(.*)'&quot;, &quot;$1&quot;);</span>
+		else
+<span class="nc" id="L123">			name = name2.toLowerCase();</span>
+
+<span class="nc" id="L125">		Optional&lt;? extends Statement&gt; rule = workspace.getRule(name);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">		if (rule.isPresent())</span>
+		{
+<span class="nc" id="L128">			Statement statement = rule.get();</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">			if (statement.isCacheable())</span>
+<span class="nc" id="L130">				return cacheHelper(name, cache, n -&gt; acquireResult(statement, n));</span>
+			else
+<span class="nc" id="L132">				return acquireResult(statement, name);</span>
+		}
+		else
+<span class="nc" id="L135">			return cacheHelper(name, cache, n -&gt; acquireValue(name, Environment::getValue));</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(String name2)
+	{
+		final String name;
+<span class="nc bnc" id="L142" title="All 2 branches missed.">		if (name2.matches(&quot;'.*'&quot;))</span>
+<span class="nc" id="L143">			name = name2.replaceAll(&quot;'(.*)'&quot;, &quot;$1&quot;);</span>
+		else
+<span class="nc" id="L145">			name = name2.toLowerCase();</span>
+
+<span class="nc" id="L147">		Optional&lt;? extends Statement&gt; rule = workspace.getRule(name);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">		if (rule.isPresent())</span>
+		{
+<span class="nc" id="L150">			Statement statement = rule.get();</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">			if (statement.isCacheable())</span>
+<span class="nc" id="L152">				return cacheHelper(name, metacache, n -&gt; statement.getMetadata(this));</span>
+			else
+<span class="nc" id="L154">				return statement.getMetadata(this);</span>
+		}
+		else
+<span class="nc" id="L157">			return cacheHelper(name, metacache, n -&gt; this.acquireValue(n, Environment::getValueMetadata));</span>
+	}
+
+	private &lt;T&gt; T cacheHelper(final String name, Map&lt;String, SoftReference&lt;T&gt;&gt; cache, Function&lt;? super String, ? extends T&gt; mapper)
+	{
+<span class="nc" id="L162">		ReentrantLock lock = cacheLocks.computeIfAbsent(name, alias -&gt; new ReentrantLock());</span>
+		
+<span class="nc bnc" id="L164" title="All 2 branches missed.">		if (lock.isHeldByCurrentThread())</span>
+		{
+<span class="nc" id="L166">			String cycleNames = Utils.getStream(cacheLocks.entrySet())</span>
+<span class="nc" id="L167">				.filter(byValue(ReentrantLock::isHeldByCurrentThread))</span>
+<span class="nc" id="L168">				.map(Entry::getKey)</span>
+<span class="nc" id="L169">				.collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="nc" id="L170">			throw new IllegalStateException(&quot;Found a cycle between rules &quot; + cycleNames);</span>
+		}
+		
+		try
+		{
+<span class="nc" id="L175">			lock.lockInterruptibly();</span>
+
+<span class="nc" id="L177">			T result = cache.computeIfAbsent(name, n -&gt; new SoftReference&lt;&gt;(null)).get();</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">			if (result == null)</span>
+			{
+<span class="nc" id="L180">				result = mapper.apply(name);</span>
+<span class="nc" id="L181">				cache.put(name, new SoftReference&lt;&gt;(result));</span>
+			}
+			
+<span class="nc" id="L184">			return result;</span>
+		}
+<span class="nc" id="L186">		catch (InterruptedException e)</span>
+		{
+<span class="nc" id="L188">			throw new VTLNestedException(&quot;Program interrupted&quot;, e);</span>
+		}
+		finally
+		{
+<span class="nc bnc" id="L192" title="All 2 branches missed.">			if (lock.isHeldByCurrentThread())</span>
+<span class="nc" id="L193">				lock.unlock();</span>
+		}
+	}
+
+	private &lt;T&gt; T acquireValue(final String name, BiFunction&lt;? super Environment, ? super String, ? extends Optional&lt;? extends T&gt;&gt; mapper)
+	{
+<span class="nc" id="L199">		LOGGER.info(&quot;Resolving value of {}&quot;, name);</span>
+
+<span class="nc" id="L201">		T result = environments.stream()</span>
+<span class="nc" id="L202">				.map(env -&gt; mapper.apply(env, name))</span>
+<span class="nc" id="L203">				.filter(Optional::isPresent)</span>
+<span class="nc" id="L204">				.map(Optional::get)</span>
+<span class="nc" id="L205">				.findFirst()</span>
+<span class="nc" id="L206">				.orElseThrow(() -&gt; new VTLUnboundNameException(name));</span>
+
+<span class="nc bnc" id="L208" title="All 4 branches missed.">		if (result instanceof DataSet &amp;&amp; !(result instanceof CachedDataSet))</span>
+		{
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L211">			T tempResult = (T) new CachedDataSet(this, name, (DataSet) result);</span>
+<span class="nc" id="L212">			result = tempResult;</span>
+		}
+
+<span class="nc" id="L215">		LOGGER.trace(&quot;Finished resolving {}&quot;, name);</span>
+<span class="nc" id="L216">		return result;</span>
+	}
+
+	private VTLValue acquireResult(Statement statement, String alias)
+	{
+<span class="nc" id="L221">		LOGGER.info(&quot;Applying {}&quot;, statement);</span>
+
+		try
+		{
+<span class="nc" id="L225">			VTLValue result = statement.eval(this);</span>
+<span class="nc bnc" id="L226" title="All 4 branches missed.">			if (result instanceof DataSet &amp;&amp; !(result instanceof CachedDataSet))</span>
+<span class="nc" id="L227">				result = new CachedDataSet(this, alias, (DataSet) result);</span>
+
+<span class="nc" id="L229">			return result;</span>
+		}
+<span class="nc" id="L231">		catch (VTLException e)</span>
+		{
+<span class="nc" id="L233">			throw new VTLNestedException(&quot;Caught exception while evaluating &quot; + statement, e);</span>
+		}
+	}
+
+	@Override
+	public List&lt;VTLValueMetadata&gt; compile()
+	{
+<span class="nc" id="L240">		return workspace.getRules().stream()</span>
+<span class="nc" id="L241">				.map(s -&gt; s.getMetadata(this))</span>
+<span class="nc" id="L242">				.collect(toList());</span>
+	}
+
+	public Map&lt;String, String&gt; getStatements()
+	{
+<span class="nc" id="L247">		return workspace.getRules().stream()</span>
+<span class="nc" id="L248">				.collect(toMap(Statement::getId, Statement::toString, (a, b) -&gt; {</span>
+<span class="nc" id="L249">					throw new UnsupportedOperationException();</span>
+				}, LinkedHashMap::new));
+	}
+
+	public List&lt;String&gt; getNodes()
+	{
+<span class="nc" id="L255">		return workspace.getRules().stream()</span>
+<span class="nc" id="L256">				.flatMap(statement -&gt; Stream.concat(Stream.of(statement.getId()), statement.getTerminals().stream().map(LeafTransformation::getText)))</span>
+<span class="nc" id="L257">				.distinct()</span>
+<span class="nc" id="L258">				.collect(toList());</span>
+	}
+
+	public List&lt;List&lt;String&gt;&gt; getTopology()
+	{
+<span class="nc" id="L263">		List&lt;List&lt;String&gt;&gt; result = Arrays.asList(new ArrayList&lt;&gt;(), new ArrayList&lt;&gt;());</span>
+
+<span class="nc" id="L265">		workspace.getRules().stream().flatMap(rule -&gt; rule.getTerminals().parallelStream()</span>
+<span class="nc" id="L266">				.map(t -&gt; t.getText())</span>
+<span class="nc" id="L267">				.map(t -&gt; new SimpleEntry&lt;&gt;(rule.getId(), t)))</span>
+<span class="nc" id="L268">				.forEach(entry -&gt; {</span>
+<span class="nc" id="L269">					synchronized (result)</span>
+					{
+<span class="nc" id="L271">						result.get(0).add(0, entry.getKey());</span>
+<span class="nc" id="L272">						result.get(1).add(0, entry.getValue());</span>
+<span class="nc" id="L273">					}</span>
+<span class="nc" id="L274">				});</span>
+
+<span class="nc" id="L276">		return result;</span>
+	}
+
+	@Override
+	public Statement getRule(String name2)
+	{
+		final String name;
+<span class="nc bnc" id="L283" title="All 2 branches missed.">		if (name2.matches(&quot;'.*'&quot;))</span>
+<span class="nc" id="L284">			name = name2.replaceAll(&quot;'(.*)'&quot;, &quot;$1&quot;);</span>
+		else
+<span class="nc" id="L286">			name = name2.toLowerCase();</span>
+
+<span class="nc" id="L288">		return workspace.getRule(name).orElseThrow(() -&gt; new VTLUnboundNameException(name));</span>
+	}
+
+	@Override
+	public MetadataRepository getRepository()
+	{
+<span class="nc" id="L294">		return repository;</span>
+	}
+
+	@Override
+	public Engine getEngine()
+	{
+<span class="nc" id="L300">		return engine;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

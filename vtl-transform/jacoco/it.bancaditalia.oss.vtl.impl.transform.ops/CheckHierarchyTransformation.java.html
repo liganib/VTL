@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CheckHierarchyTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">CheckHierarchyTransformation.java</span></div><h1>CheckHierarchyTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.transform.ops.CheckHierarchyTransformation.Input.DATASET;
+import static it.bancaditalia.oss.vtl.impl.transform.ops.CheckHierarchyTransformation.Input.DATASET_PRIORITY;
+import static it.bancaditalia.oss.vtl.impl.transform.ops.CheckHierarchyTransformation.Output.ALL;
+import static it.bancaditalia.oss.vtl.impl.transform.ops.CheckHierarchyTransformation.Output.INVALID;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.NUMBERDS;
+import static it.bancaditalia.oss.vtl.model.data.Hierarchy.CheckMode.NON_NULL;
+
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLInvalidParameterException;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.domain.Domains;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.Hierarchy;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public class CheckHierarchyTransformation extends TransformationImpl
+{
+	private static final long serialVersionUID = 1L;
+<span class="nc" id="L55">	private static final Logger LOGGER = LoggerFactory.getLogger(CheckHierarchyTransformation.class);</span>
+	
+<span class="nc" id="L57">	public enum Input</span>
+	{
+<span class="nc" id="L59">		DATASET, DATASET_PRIORITY;</span>
+	}
+	
+<span class="nc" id="L62">	public enum Output</span>
+	{
+<span class="nc" id="L64">		ALL, INVALID, ALL_MEASURES;</span>
+	}
+	
+	private final Transformation operand;
+	private final VarIDOperand hierarchyId;
+	private final Output output;
+	private final Hierarchy.CheckMode mode;
+	private final Input input;
+<span class="nc" id="L72">	private final AtomicReference&lt;VTLDataSetMetadata&gt; metadata = new AtomicReference&lt;&gt;();</span>
+	
+	private DataStructureComponent&lt;? extends Measure, ?, ?&gt; measure;
+	private DataStructureComponent&lt;?, ?, ?&gt; ruleKey;
+	
+	public CheckHierarchyTransformation(Transformation operand, VarIDOperand hierarchyId, Hierarchy.CheckMode mode, Input input, Output output)
+<span class="nc" id="L78">	{</span>
+<span class="nc" id="L79">		LOGGER.warn(&quot;check_hierarchy: Implementation diverges from specification: datapoints outside {} will not be checked.&quot;, operand);</span>
+		
+<span class="nc" id="L81">		this.operand = operand;</span>
+<span class="nc" id="L82">		this.hierarchyId = hierarchyId;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		this.mode = mode == null ? NON_NULL : mode;</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">		this.input = input == null ? DATASET : input;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		this.output = output == null ? INVALID : output;</span>
+<span class="nc" id="L86">	}</span>
+
+	@Override
+	public boolean isTerminal()
+	{
+<span class="nc" id="L91">		return false;</span>
+	}
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L97">		return operand.getTerminals();</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc bnc" id="L103" title="All 2 branches missed.">		if (metadata.get() != null)</span>
+<span class="nc" id="L104">			return metadata.get();</span>
+		
+<span class="nc bnc" id="L106" title="All 2 branches missed.">		if (input == DATASET_PRIORITY)</span>
+<span class="nc" id="L107">			throw new UnsupportedOperationException(&quot;check_hierarchy: &quot; + input + &quot; not supported&quot;);	</span>
+
+<span class="nc" id="L109">		VTLValueMetadata opValue = operand.getMetadata(session);</span>
+<span class="nc" id="L110">		VTLValueMetadata hierValue = hierarchyId.getMetadata(session);</span>
+		
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (!(opValue instanceof VTLDataSetMetadata))</span>
+<span class="nc" id="L113">			throw new VTLInvalidParameterException(opValue, VTLDataSetMetadata.class);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">		if (!(hierValue instanceof Hierarchy))</span>
+<span class="nc" id="L115">			throw new VTLInvalidParameterException(hierValue, Hierarchy.class);</span>
+		
+<span class="nc" id="L117">		VTLDataSetMetadata dataset = (VTLDataSetMetadata) operand.getMetadata(session);</span>
+<span class="nc" id="L118">		Hierarchy hierarchy = (Hierarchy) hierValue;</span>
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">		if (dataset.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L121">			throw new VTLExpectedComponentException(Measure.class, dataset.getComponents(Measure.class));</span>
+		
+<span class="nc" id="L123">		measure = dataset.getComponents(Measure.class).iterator().next();</span>
+<span class="nc" id="L124">		ruleKey = hierarchy.selectComponent(dataset);</span>
+		
+<span class="nc" id="L126">		LOGGER.trace(&quot;Measure is {} and rule key is {}&quot;, measure, ruleKey);</span>
+		
+<span class="nc bnc" id="L128" title="All 2 branches missed.">		if (!NUMBERDS.isAssignableFrom(measure.getDomain()))</span>
+<span class="nc" id="L129">			throw new VTLIncompatibleTypesException(&quot;check_hierarchy&quot;, NUMBERDS, measure.getDomain());</span>
+
+<span class="nc" id="L131">		Builder builder = new Builder(dataset.getComponents(Identifier.class))</span>
+<span class="nc" id="L132">				.addComponent(&quot;ruleid&quot;,     Identifier.class, Domains.STRINGDS)</span>
+<span class="nc" id="L133">				.addComponent(&quot;imbalance&quot;,  Measure.class,    measure.getDomain())</span>
+<span class="nc" id="L134">				.addComponent(&quot;errorcode&quot;,  Measure.class,    Domains.STRINGDS)</span>
+<span class="nc" id="L135">				.addComponent(&quot;errorlevel&quot;, Measure.class,    Domains.INTEGERDS)</span>
+<span class="nc" id="L136">				.removeComponent(ruleKey);</span>
+		
+<span class="nc bnc" id="L138" title="All 2 branches missed.">		if (output != ALL)</span>
+<span class="nc" id="L139">			builder = builder.addComponent(measure);</span>
+		
+<span class="nc bnc" id="L141" title="All 2 branches missed.">		if (output != INVALID)</span>
+<span class="nc" id="L142">			builder = builder.addComponent(new DataStructureComponentImpl&lt;&gt;(&quot;bool_var&quot;, Measure.class, Domains.BOOLEANDS));</span>
+
+<span class="nc" id="L144">		metadata.compareAndSet(null, builder.build());</span>
+<span class="nc" id="L145">		LOGGER.trace(&quot;Metadata: {}&quot;, metadata);</span>
+		
+<span class="nc" id="L147">		return metadata.get();</span>
+	}
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+		/*DataSet dataset = (DataSet) operand.eval(session.uniqueName(), session);
+		Hierarchy hierarchy = (Hierarchy) hierarchyId.eval(session.uniqueName(), session);
+		Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; identifiers = new HashSet&lt;&gt;(metadata.get().getComponents(Identifier.class));
+		identifiers.remove(ruleKey);
+		DataSetIndex byIds = dataset.getIndex(identifiers);
+		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; bool_var = new DataStructureComponentImpl&lt;&gt;(&quot;bool_var&quot;, Measure.class, Domains.BOOLEANDS);
+		
+		Stream&lt;DataPoint&gt; stream = byIds.streamByKeys()
+			.flatMap(e -&gt; Utils.getStream(hierarchy.getRuleItems())
+					.map(rule -&gt; new Triple&lt;&gt;(rule, e)))
+			.map(splitting((rule, keys, group) -&gt; { 
+					HashMap&lt;DataStructureComponent&lt;?, ?, ?&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; res = new HashMap&lt;&gt;(keys); 
+					res.put(ruleKey, new StringValue(rule.getCodeItem()));
+					return new Triple&lt;&gt;(rule, res, group); 
+			// ==&gt; rule, keys, dataset 
+			})).map(splitting((rule, keys, group) -&gt; new SimpleEntry&lt;&gt;(keys, rule.validate(measure, mode, group.get()
+					.collect(toConcurrentMap(dp -&gt; dp.get(ruleKey), dp -&gt; dp.get(measure)))))))
+			.filter(byValue(map -&gt; !map.isEmpty()))
+			.filter(byValue(map -&gt; output != INVALID || (Boolean) map.get(bool_var).get()))
+			.map(splitting((k, v) -&gt; new DataPointBuilder(k).addAll(v)))
+			.map(dpb -&gt; dpb.delete(ruleKey))
+			.map(dpb -&gt; output == INVALID ? dpb.delete(bool_var) : dpb)
+			.map(dpb -&gt; output == ALL ? dpb.delete(measure) : dpb)
+			.map(dpb -&gt; dpb.build(metadata.get()));
+		
+		return null; //AbstractDataSet.from(alias, metadata.get(), () -&gt; );*/
+<span class="nc" id="L179">		throw new UnsupportedOperationException(&quot;check hierarchical ruleset not implemented&quot;);</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L185">		return &quot;CHECK_HIERARCHY(&quot; + operand + &quot;, &quot; + hierarchyId + &quot; &quot; + mode + &quot; &quot; + input + &quot; &quot; + output + &quot;)&quot;; </span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AggregateTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">AggregateTransformation.java</span></div><h1>AggregateTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static java.util.stream.Collectors.toSet;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import it.bancaditalia.oss.vtl.exceptions.VTLMissingComponentsException;
+import it.bancaditalia.oss.vtl.impl.transform.dataset.LightFDataSet;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLIncompatibleRolesException;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.domain.Domains;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.impl.types.operators.AggregateOperator;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.NonIdentifier;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructure;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.domain.NumberDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public class AggregateTransformation extends UnaryTransformation
+{
+	private static final long serialVersionUID = 1L;
+	private final AggregateOperator	aggregation;
+	private final List&lt;String&gt; groupBy;
+	private final Transformation having;
+
+	private VTLValueMetadata metadata;
+
+	public AggregateTransformation(AggregateOperator aggregation, Transformation operand, List&lt;String&gt; groupBy, Transformation having)
+	{
+<span class="nc" id="L66">		super(operand);</span>
+
+<span class="nc" id="L68">		this.aggregation = aggregation;</span>
+<span class="nc bnc" id="L69" title="All 4 branches missed.">		this.groupBy = groupBy == null || groupBy.isEmpty() ? null : groupBy;</span>
+<span class="nc" id="L70">		this.having = having;</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">		if (this.having != null)</span>
+<span class="nc" id="L73">			throw new UnsupportedOperationException(aggregation + &quot;(... having ...) not implemented&quot;);</span>
+<span class="nc" id="L74">	}</span>
+
+	@Override
+	protected VTLValue evalOnScalar(ScalarValue&lt;?, ?, ?&gt; scalar)
+	{
+<span class="nc" id="L79">		return Stream.of(scalar).collect(aggregation.getReducer());</span>
+	}
+
+	@Override
+	protected VTLValue evalOnDataset(DataSet dataset)
+	{
+<span class="nc" id="L85">		Collector&lt;? super ScalarValue&lt;?, ?, ?&gt;, ?, ? extends ScalarValue&lt;?, ?, ?&gt;&gt; reducer = aggregation.getReducer();</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">		if (groupBy == null) // aggregation group is defined by the caller expression (typically AGGR clause)</span>
+		{
+<span class="nc" id="L89">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; measure = dataset.getComponents(Measure.class).iterator().next();</span>
+<span class="nc" id="L90">			return dataset.stream().map(d -&gt; d.get(measure)).collect(reducer);</span>
+		}
+		else
+		{
+<span class="nc" id="L94">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; measure = dataset.getComponents(Measure.class).iterator().next();</span>
+<span class="nc" id="L95">			Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; groupIDs = groupBy.stream()</span>
+<span class="nc" id="L96">					.map(dataset::getComponent)</span>
+<span class="nc" id="L97">					.map(Optional::get)</span>
+<span class="nc" id="L98">					.map(c -&gt; c.as(Identifier.class))</span>
+<span class="nc" id="L99">					.collect(toSet());</span>
+			// dataset-level aggregation
+<span class="nc" id="L101">			return new LightFDataSet&lt;&gt;((VTLDataSetMetadata) metadata, ds -&gt; ds.streamByKeys(groupIDs, (key, group) -&gt; new DataPointBuilder(key)</span>
+<span class="nc" id="L102">					.add(measure, group.map(d -&gt; d.get(measure)).collect(reducer))</span>
+<span class="nc" id="L103">					.build((VTLDataSetMetadata) metadata)), dataset);</span>
+		}
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc" id="L110">		VTLValueMetadata opmeta = operand.getMetadata(session);</span>
+<span class="nc" id="L111">		metadata = (VTLScalarValueMetadata&lt;?&gt;) () -&gt; Domains.NUMBERDS;</span>
+		
+<span class="nc bnc" id="L113" title="All 4 branches missed.">		if (opmeta instanceof VTLScalarValueMetadata &amp;&amp; ((VTLScalarValueMetadata&lt;?&gt;) opmeta).getDomain() instanceof NumberDomainSubset)</span>
+<span class="nc" id="L114">			return metadata;</span>
+		else// if (meta instanceof VTLDataSetMetadata)
+		{
+<span class="nc" id="L117">			VTLDataSetMetadata dataset = (VTLDataSetMetadata) opmeta;</span>
+<span class="nc" id="L118">			final Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; measures = dataset.getComponents(Measure.class);</span>
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">			if (groupBy == null)</span>
+			{
+<span class="nc bnc" id="L122" title="All 2 branches missed.">				if (measures.size() != 1)</span>
+<span class="nc" id="L123">					throw new VTLExpectedComponentException(Measure.class, measures);</span>
+				
+<span class="nc" id="L125">				DataStructureComponent&lt;? extends Measure, ?, ?&gt; measure = measures.iterator().next();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">				if (!Domains.NUMBERDS.isAssignableFrom(measure.getDomain()))</span>
+<span class="nc" id="L127">					throw new VTLIncompatibleTypesException(&quot;Aggregation&quot;, Domains.NUMBERDS, measure.getDomain());</span>
+				
+<span class="nc" id="L129">				return metadata;</span>
+			}
+			else
+			{
+<span class="nc" id="L133">				Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; groupComps = groupBy.stream()</span>
+<span class="nc" id="L134">						.map(dataset::getComponent)</span>
+<span class="nc" id="L135">						.map(o -&gt; o.orElseThrow(() -&gt; new VTLMissingComponentsException((DataStructure) operand, groupBy.toArray(new String[0]))))</span>
+<span class="nc" id="L136">						.collect(toSet());</span>
+				
+<span class="nc" id="L138">				Optional&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; nonID = groupComps.stream().filter(c -&gt; c.is(NonIdentifier.class)).findAny();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">				if (nonID.isPresent())</span>
+<span class="nc" id="L140">					throw new VTLIncompatibleRolesException(&quot;aggr with group by&quot;, nonID.get(), Identifier.class);</span>
+				
+<span class="nc" id="L142">				Set&lt;DataStructureComponent&lt;Identifier, ?, ?&gt;&gt; keys = groupComps.stream().map(c -&gt; c.as(Identifier.class)).collect(toSet());</span>
+				
+<span class="nc" id="L144">				metadata = new Builder().addComponents(keys).addComponents(measures).build();</span>
+<span class="nc" id="L145">				return metadata;</span>
+			}
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc bnc" id="L153" title="All 2 branches missed.">		return aggregation + &quot;(&quot; + operand + &quot;)&quot; + (groupBy != null ? groupBy.stream().collect(Collectors.joining(&quot;, &quot;, &quot; GROUP BY &quot;, &quot;&quot;)) : &quot;&quot;);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

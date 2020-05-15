@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SDMXEnvironment.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">vtl-coverage</a> &gt; <a href="../index.html" class="el_bundle">vtl-envs</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.environment</a> &gt; <span class="el_source">SDMXEnvironment.java</span></div><h1>SDMXEnvironment.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.environment;
+
+import static it.bancaditalia.oss.sdmx.api.PortableDataSet.OBS_LABEL;
+import static it.bancaditalia.oss.sdmx.api.PortableDataSet.TIME_LABEL;
+import static it.bancaditalia.oss.vtl.impl.types.data.date.PeriodHolder.Formatter.MONTH_PERIOD_FORMATTER;
+import static it.bancaditalia.oss.vtl.impl.types.data.date.PeriodHolder.Formatter.QUARTER_PERIOD_FORMATTER;
+import static it.bancaditalia.oss.vtl.impl.types.data.date.PeriodHolder.Formatter.SEMESTER_PERIOD_FORMATTER;
+import static it.bancaditalia.oss.vtl.impl.types.data.date.PeriodHolder.Formatter.YEAR_PERIOD_FORMATTER;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.NUMBERDS;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.STRINGDS;
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.TIMEDS;
+import static it.bancaditalia.oss.vtl.util.Utils.byKey;
+import static it.bancaditalia.oss.vtl.util.Utils.entriesToMap;
+import static it.bancaditalia.oss.vtl.util.Utils.keepingKey;
+import static it.bancaditalia.oss.vtl.util.Utils.toEntry;
+import static java.util.stream.Collectors.toConcurrentMap;
+
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import it.bancaditalia.oss.sdmx.api.BaseObservation;
+import it.bancaditalia.oss.sdmx.api.Codelist;
+import it.bancaditalia.oss.sdmx.api.DataFlowStructure;
+import it.bancaditalia.oss.sdmx.api.Dimension;
+import it.bancaditalia.oss.sdmx.api.PortableDataSet;
+import it.bancaditalia.oss.sdmx.api.PortableTimeSeries;
+import it.bancaditalia.oss.sdmx.api.SdmxMetaElement;
+import it.bancaditalia.oss.sdmx.client.SdmxClientHandler;
+import it.bancaditalia.oss.sdmx.exceptions.DataStructureException;
+import it.bancaditalia.oss.sdmx.exceptions.SdmxException;
+import it.bancaditalia.oss.vtl.environment.Environment;
+import it.bancaditalia.oss.vtl.exceptions.VTLException;
+import it.bancaditalia.oss.vtl.exceptions.VTLNestedException;
+import it.bancaditalia.oss.vtl.impl.types.data.DateValue;
+import it.bancaditalia.oss.vtl.impl.types.data.DoubleValue;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.data.StringValue;
+import it.bancaditalia.oss.vtl.impl.types.data.TimePeriodValue;
+import it.bancaditalia.oss.vtl.impl.types.data.TimeValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.LightDataSet;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Attribute;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.domain.StringCodeList;
+import it.bancaditalia.oss.vtl.model.domain.StringDomain;
+import it.bancaditalia.oss.vtl.model.domain.TimeDomain;
+import it.bancaditalia.oss.vtl.model.domain.TimeDomainSubset;
+import it.bancaditalia.oss.vtl.session.MetadataRepository;
+import it.bancaditalia.oss.vtl.session.MetadataRepositoryFactory;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+class SDMXEnvironment implements Environment
+{
+	public static final String DROP_ID_PROPERTY = &quot;vtl.sdmx.keep.identifiers&quot;;
+	
+<span class="nc" id="L101">	private static final Set&lt;String&gt; UNSUPPORTED = Stream.of(&quot;CONNECTORS_AUTONAME&quot;, &quot;action&quot;, &quot;validFromDate&quot;, &quot;ID&quot;).collect(Collectors.toSet());</span>
+<span class="nc" id="L102">	private static final SortedMap&lt;String, Boolean&gt; PROVIDERS = SdmxClientHandler.getProviders(); // it will contain only built-in providers for now.</span>
+<span class="nc" id="L103">	private static final Map&lt;DateTimeFormatter, Function&lt;TemporalAccessor, TimeValue&lt;?, ?, ?&gt;&gt;&gt; FORMATTERS = new HashMap&lt;&gt;();</span>
+
+	private final boolean dropIdentifiers;
+	private final MetadataRepository repository;
+
+	static
+	{
+<span class="nc" id="L110">		FORMATTERS.put(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd hh:mm:ss&quot;), DateValue::new);</span>
+<span class="nc" id="L111">		FORMATTERS.put(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd hh:mm&quot;), DateValue::new);</span>
+<span class="nc" id="L112">		FORMATTERS.put(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd hh&quot;), DateValue::new);</span>
+<span class="nc" id="L113">		FORMATTERS.put(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;), DateValue::new);</span>
+<span class="nc" id="L114">		FORMATTERS.put(YEAR_PERIOD_FORMATTER.get(), TimePeriodValue::new);</span>
+<span class="nc" id="L115">		FORMATTERS.put(SEMESTER_PERIOD_FORMATTER.get(), TimePeriodValue::new);</span>
+<span class="nc" id="L116">		FORMATTERS.put(QUARTER_PERIOD_FORMATTER.get(), TimePeriodValue::new);</span>
+<span class="nc" id="L117">		FORMATTERS.put(MONTH_PERIOD_FORMATTER.get(), TimePeriodValue::new);</span>
+<span class="nc" id="L118">	}</span>
+
+	public SDMXEnvironment()
+<span class="nc" id="L121">	{</span>
+<span class="nc" id="L122">		ServiceLoader&lt;MetadataRepositoryFactory&gt; factoryLoader = ServiceLoader.load(MetadataRepositoryFactory.class);</span>
+<span class="nc" id="L123">		repository = factoryLoader.iterator().next().getDefaultRepository();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">		dropIdentifiers = !&quot;true&quot;.equalsIgnoreCase(System.getProperty(DROP_ID_PROPERTY, &quot;false&quot;));</span>
+<span class="nc" id="L125">	}</span>
+
+	@Override
+	public boolean contains(String id)
+	{
+<span class="nc bnc" id="L130" title="All 4 branches missed.">		return id.startsWith(&quot;sdmx:&quot;) &amp;&amp; PROVIDERS.containsKey(id.substring(5).split(&quot;\\.&quot;)[0]);</span>
+	}
+
+	@Override
+	public Optional&lt;? extends VTLValue&gt; getValue(String name)
+	{
+<span class="nc bnc" id="L136" title="All 2 branches missed.">		if (contains(name))</span>
+		{
+<span class="nc" id="L138">			name = name.substring(5);</span>
+<span class="nc" id="L139">			String provider = name.split(&quot;\\.&quot;)[0];</span>
+<span class="nc" id="L140">			String query = name.split(&quot;\\.&quot;, 2)[1];</span>
+			try
+			{
+<span class="nc" id="L143">				List&lt;PortableTimeSeries&lt;Double&gt;&gt; table = SdmxClientHandler.getTimeSeries(provider, query, null, null);</span>
+<span class="nc" id="L144">				return Optional.of(parseSDMXTable(name, table));</span>
+			}
+<span class="nc" id="L146">			catch (SdmxException | DataStructureException e)</span>
+			{
+<span class="nc" id="L148">				throw new VTLNestedException(&quot;Fatal error contacting SDMX provider '&quot; + provider + &quot;'&quot;, e);</span>
+			}
+		}
+
+<span class="nc" id="L152">		return Optional.empty();</span>
+	}
+
+	@Override
+	public Optional&lt;VTLDataSetMetadata&gt; getValueMetadata(String name)
+	{
+<span class="nc bnc" id="L158" title="All 2 branches missed.">		if (contains(name))</span>
+		{
+<span class="nc" id="L160">			name = name.substring(5);</span>
+<span class="nc" id="L161">			String provider = name.split(&quot;\\.&quot;)[0];</span>
+<span class="nc" id="L162">			String dataflow = name.split(&quot;\\.&quot;)[1];</span>
+
+<span class="nc" id="L164">			return getMetadataSDMX(provider, dataflow, name.split(&quot;\\.&quot;, 3)[2].split(&quot;\\.&quot;, -1));</span>
+		}
+
+<span class="nc" id="L167">		return Optional.empty();</span>
+	}
+
+	protected DataSet parseSDMXTable(String name, List&lt;PortableTimeSeries&lt;Double&gt;&gt; table) throws DataStructureException
+	{
+<span class="nc" id="L172">		VTLDataSetMetadata metadata = getValueMetadata(&quot;sdmx:&quot; + name)</span>
+<span class="nc" id="L173">				.orElseThrow(() -&gt; new NullPointerException(&quot;Could not retrieve SDMX metadata for &quot; + name));</span>
+
+<span class="nc" id="L175">		ConcurrentMap&lt;PortableTimeSeries&lt;Double&gt;, ? extends ConcurrentMap&lt;String, ? extends ScalarValue&lt;?, ?, ?&gt;&gt;&gt; seriesMeta = Utils.getStream(table)</span>
+<span class="nc" id="L176">				.map(toEntry(Function.identity(), PortableTimeSeries::getAttributesMap))</span>
+<span class="nc" id="L177">				.map(e -&gt; {</span>
+<span class="nc" id="L178">					ConcurrentMap&lt;String, String&gt; attrs = new ConcurrentHashMap&lt;&gt;(e.getKey().getAttributesMap());</span>
+<span class="nc" id="L179">					attrs.putAll(e.getKey().getDimensionsMap());</span>
+<span class="nc" id="L180">					return new SimpleEntry&lt;&gt;(e.getKey(), attrs);</span>
+				})
+<span class="nc" id="L182">				.map(keepingKey(SDMXEnvironment::extractAttrs))</span>
+<span class="nc" id="L183">				.collect(entriesToMap());</span>
+
+<span class="nc" id="L185">		return new LightDataSet(metadata, () -&gt; Utils.getStream(table)</span>
+<span class="nc" id="L186">				.flatMap(s -&gt; s.stream()</span>
+<span class="nc" id="L187">						.map(o -&gt; l1(metadata, seriesMeta, s, o)) //</span>
+<span class="nc" id="L188">						.map(v -&gt; new DataPointBuilder(v).build(metadata))));</span>
+	}
+
+	private ConcurrentMap&lt;? extends DataStructureComponent&lt;?, ?, ?&gt;, ? extends ScalarValue&lt;?, ?, ?&gt;&gt; l1(VTLDataSetMetadata metadata,
+			ConcurrentMap&lt;? extends PortableTimeSeries&lt;Double&gt;, ? extends ConcurrentMap&lt;String, ? extends ScalarValue&lt;?, ?, ?&gt;&gt;&gt; seriesMeta,
+			PortableTimeSeries&lt;Double&gt; s, BaseObservation&lt;? extends Double&gt; o)
+	{
+<span class="nc" id="L195">		return Stream.concat(seriesMeta.get(s).entrySet().stream(),</span>
+<span class="nc" id="L196">				Stream.concat(obsLevelAttrs(s, o),</span>
+<span class="nc" id="L197">						Stream.of(new SimpleEntry&lt;&gt;(TIME_LABEL, asDate(o)),</span>
+<span class="nc" id="L198">								new SimpleEntry&lt;&gt;(OBS_LABEL, new DoubleValue(o.getValueAsDouble())))))</span>
+<span class="nc" id="L199">				.map(e -&gt; new SimpleEntry&lt;&gt;(metadata.getComponent(e.getKey()).get(), e.getValue()))</span>
+<span class="nc" id="L200">				.map(keepingKey((k, v) -&gt; k.getDomain().cast(v)))</span>
+<span class="nc" id="L201">				.collect(toConcurrentMap(Entry::getKey, Entry::getValue));</span>
+	}
+
+	private ScalarValue&lt;?, ? extends TimeDomainSubset&lt;? extends TimeDomain&gt;, ? extends TimeDomain&gt; asDate(BaseObservation&lt;? extends Double&gt; o)
+	{
+<span class="nc" id="L206">		DateTimeException last = null;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">		for (DateTimeFormatter formatter : FORMATTERS.keySet())</span>
+			try
+			{
+<span class="nc" id="L210">				TemporalAccessor parsed = formatter.parse(o.getTimeslot());</span>
+<span class="nc" id="L211">				return FORMATTERS.get(formatter).apply(parsed);</span>
+			}
+<span class="nc" id="L213">			catch (DateTimeException e)</span>
+			{
+<span class="nc" id="L215">				last = e;</span>
+<span class="nc" id="L216">			}</span>
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">		if (last != null)</span>
+<span class="nc" id="L219">			throw last;</span>
+		else 
+<span class="nc" id="L221">			throw new IllegalStateException(&quot;this point should not be reached&quot;);</span>
+	}
+
+	private static ConcurrentMap&lt;String, ? extends ScalarValue&lt;?, ?, ?&gt;&gt; extractAttrs(Map&lt;String, String&gt; attrs)
+	{
+<span class="nc" id="L226">		return Utils.getStream(attrs.entrySet())</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">				.filter(e -&gt; !UNSUPPORTED.contains(e.getKey()))</span>
+<span class="nc" id="L228">				.map(keepingKey(StringValue::new))</span>
+<span class="nc" id="L229">				.map(keepingKey(v -&gt; (ScalarValue&lt;?, ?, ?&gt;) v))</span>
+<span class="nc" id="L230">				.collect(entriesToMap());</span>
+	}
+
+	private static Stream&lt;Entry&lt;String, ScalarValue&lt;?, ?, ?&gt;&gt;&gt; obsLevelAttrs(PortableTimeSeries&lt;Double&gt; series, BaseObservation&lt;? extends Double&gt; observation)
+	{
+<span class="nc" id="L235">		return Utils.getStream(observation.getAttributes().entrySet())</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">				.filter(byKey(k -&gt; !UNSUPPORTED.contains(k)))</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">				.map(keepingKey(v -&gt; (ScalarValue&lt;?, ?, ?&gt;) (v != null ? new StringValue(v) : NullValue.instance(STRINGDS))));</span>
+	}
+
+	private &lt;T extends ComponentRole&gt; DataStructureComponentImpl&lt;T, ValueDomainSubset&lt;StringDomain&gt;, StringDomain&gt; elementToComponent(Class&lt;T&gt; role,
+			SdmxMetaElement meta)
+	{
+<span class="nc" id="L243">		Codelist codelist = meta.getCodeList();</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">		if (codelist == null)</span>
+<span class="nc" id="L245">			return new DataStructureComponentImpl&lt;&gt;(meta.getId(), role, STRINGDS);</span>
+
+<span class="nc" id="L247">		String domainName = codelist.getId();</span>
+<span class="nc" id="L248">		StringCodeList vtlCodelist = repository.defineDomain(domainName, StringCodeList.class, codelist.keySet());</span>
+<span class="nc" id="L249">		return new DataStructureComponentImpl&lt;&gt;(meta.getId(), role, vtlCodelist);</span>
+	}
+
+	protected Optional&lt;VTLDataSetMetadata&gt; getMetadataSDMX(String provider, String dataflow, String[] tokens)
+	{
+		try
+		{
+<span class="nc" id="L256">			DataFlowStructure dsd = SdmxClientHandler.getDataFlowStructure(provider, dataflow);</span>
+
+			// remove the fixed (not wildcarded) dimensions from the list of identifiers
+<span class="nc" id="L259">			List&lt;Dimension&gt; dimensions = dsd.getDimensions();</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">			for (Dimension d : dimensions)</span>
+<span class="nc" id="L261">				SdmxClientHandler.getCodes(provider, dataflow, d.getId());</span>
+
+<span class="nc" id="L263">			List&lt;SdmxMetaElement&gt; activeAttributes = new ArrayList&lt;&gt;(dsd.getAttributes());</span>
+<span class="nc" id="L264">			List&lt;Dimension&gt; activeDims = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L266" title="All 2 branches missed.">			if (isDropIdentifiers())</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">				for (int i = 0; i &lt; tokens.length; i++)</span>
+<span class="nc bnc" id="L268" title="All 4 branches missed.">					if (tokens[i].isEmpty() || tokens[i].indexOf('+') != -1)</span>
+<span class="nc" id="L269">						activeDims.add(dimensions.get(i));</span>
+					else
+<span class="nc" id="L271">						activeAttributes.add(dimensions.get(i));</span>
+			else
+<span class="nc" id="L273">				activeDims = dimensions;</span>
+
+<span class="nc" id="L275">			return Optional.of(Stream</span>
+<span class="nc" id="L276">					.concat(activeDims.stream().map(d -&gt; elementToComponent(Identifier.class, d)),</span>
+<span class="nc" id="L277">							activeAttributes.stream().map(a -&gt; elementToComponent(Attribute.class, a)))</span>
+<span class="nc" id="L278">					.reduce(new Builder(), Builder::addComponent, Builder::merge)</span>
+<span class="nc" id="L279">					.addComponent(new DataStructureComponentImpl&lt;&gt;(PortableDataSet.TIME_LABEL, Identifier.class, TIMEDS))</span>
+<span class="nc" id="L280">					.addComponent(new DataStructureComponentImpl&lt;&gt;(PortableDataSet.OBS_LABEL, Measure.class, NUMBERDS)).build());</span>
+		}
+<span class="nc" id="L282">		catch (SdmxException e)</span>
+		{
+<span class="nc" id="L284">			throw new VTLException(&quot;SDMX&quot;, e);</span>
+		}
+	}
+
+	public boolean isDropIdentifiers()
+	{
+<span class="nc" id="L290">		return dropIdentifiers;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

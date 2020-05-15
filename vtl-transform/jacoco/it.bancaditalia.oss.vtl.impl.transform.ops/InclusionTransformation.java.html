@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InclusionTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">InclusionTransformation.java</span></div><h1>InclusionTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.BOOLEANDS;
+import static it.bancaditalia.oss.vtl.util.Utils.not;
+import static java.util.Collections.singletonMap;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
+
+import it.bancaditalia.oss.vtl.impl.types.data.BooleanValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomain;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public class InclusionTransformation extends UnaryTransformation
+{
+	private static final long serialVersionUID = 1L;
+
+<span class="nc" id="L53">	public static enum InOperator implements BiPredicate&lt;Set&lt;ScalarValue&lt;?, ?, ?&gt;&gt;, ScalarValue&lt;?, ?, ?&gt;&gt;</span>
+	{
+<span class="nc" id="L55">		IN(&quot;in&quot;, Set::contains),</span>
+<span class="nc" id="L56">		NOTIN(&quot;not_in&quot;, not(Set::contains));</span>
+
+		private final String text;
+		private final BiPredicate&lt;Set&lt;ScalarValue&lt;?, ?, ?&gt;&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; test;
+
+		private InOperator(String text, BiPredicate&lt;Set&lt;ScalarValue&lt;?, ?, ?&gt;&gt;, ScalarValue&lt;?, ?, ?&gt;&gt; test)
+<span class="nc" id="L62">		{</span>
+<span class="nc" id="L63">			this.text = text;</span>
+<span class="nc" id="L64">			this.test = test;</span>
+<span class="nc" id="L65">		}</span>
+
+		@Override
+		public boolean test(Set&lt;ScalarValue&lt;?, ?, ?&gt;&gt; t, ScalarValue&lt;?, ?, ?&gt; u)
+		{
+<span class="nc" id="L70">			return test.test(t,  u);</span>
+		}
+		
+		@Override
+		public String toString()
+		{
+<span class="nc" id="L76">			return text;</span>
+		}
+	}
+
+	private final InOperator operator;
+	private final Set&lt;ScalarValue&lt;?, ?, ?&gt;&gt; set;
+
+<span class="nc" id="L83">	private VTLDataSetMetadata    metadata = null;</span>
+
+	public InclusionTransformation(InOperator operator, Transformation operand, List&lt;ScalarValue&lt;?, ?, ?&gt;&gt; list)
+	{
+<span class="nc" id="L87">		super(operand);</span>
+<span class="nc" id="L88">		this.operator = operator;</span>
+<span class="nc" id="L89">		this.set = new HashSet&lt;&gt;(list);</span>
+<span class="nc" id="L90">	}</span>
+
+	@Override
+	protected VTLValue evalOnScalar(ScalarValue&lt;?, ?, ?&gt; scalar)
+	{
+<span class="nc" id="L95">		return BooleanValue.of(operator.test(set, scalar));</span>
+	}
+
+	@Override
+	protected VTLValue evalOnDataset(DataSet dataset)
+	{
+<span class="nc" id="L101">		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; resultMeasure = metadata.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="nc" id="L102">		DataStructureComponent&lt;? extends Measure, ?, ?&gt; datasetMeasure = dataset.getComponents(Measure.class).iterator().next();</span>
+		
+<span class="nc" id="L104">		return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, BooleanValue.of(operator.test(set, dp.get(datasetMeasure)))));</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc" id="L110">		VTLValueMetadata value = operand.getMetadata(session);</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (value instanceof VTLDataSetMetadata)</span>
+		{
+<span class="nc" id="L114">			VTLDataSetMetadata ds = (VTLDataSetMetadata) value;</span>
+
+<span class="nc" id="L116">			Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; measures = ds.getComponents(Measure.class);</span>
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">			if (measures.size() != 1)</span>
+<span class="nc" id="L119">				throw new UnsupportedOperationException(&quot;Expected single measure but found: &quot; + measures);</span>
+
+<span class="nc" id="L121">			return metadata = new Builder()</span>
+<span class="nc" id="L122">					.addComponents(ds.getComponents(Identifier.class))</span>
+<span class="nc" id="L123">					.addComponent(new DataStructureComponentImpl&lt;&gt;(&quot;bool_var&quot;, Measure.class, BOOLEANDS))</span>
+<span class="nc" id="L124">					.build();</span>
+		}
+		else
+		{
+<span class="nc" id="L128">			return (VTLScalarValueMetadata&lt;BooleanDomainSubset&gt;) () -&gt; BOOLEANDS;</span>
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L135">		return operand + &quot; &quot; + operator + set.stream().map(Object::toString).collect(Collectors.joining(&quot;, &quot;, &quot; {&quot;, &quot;}&quot;));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

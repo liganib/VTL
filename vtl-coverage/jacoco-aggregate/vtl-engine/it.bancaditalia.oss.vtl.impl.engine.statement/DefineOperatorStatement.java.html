@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DefineOperatorStatement.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">vtl-coverage</a> &gt; <a href="../index.html" class="el_bundle">vtl-engine</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.engine.statement</a> &gt; <span class="el_source">DefineOperatorStatement.java</span></div><h1>DefineOperatorStatement.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.engine.statement;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+import java.util.Set;
+
+import it.bancaditalia.oss.vtl.engine.NamedOperator;
+import it.bancaditalia.oss.vtl.exceptions.VTLException;
+import it.bancaditalia.oss.vtl.exceptions.VTLNestedException;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLSingletonComponentRequiredException;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.session.MetadataRepository;
+
+class DefineOperatorStatement extends AbstractStatement implements NamedOperator
+{
+	//private final static Logger LOGGER = LoggerFactory.getLogger(AssignStatement.class);
+	private static final long serialVersionUID = 1L;
+
+	private final Transformation	expression;
+	private final List&lt;Parameter&gt; params;
+	private final String resultType;
+
+	public DefineOperatorStatement(String name, List&lt;Parameter&gt; params, String resultType, Transformation expression)
+	{
+<span class="nc" id="L55">		super(name);</span>
+<span class="nc" id="L56">		this.expression = expression;</span>
+<span class="nc" id="L57">		this.params = params;</span>
+<span class="nc" id="L58">		this.resultType = resultType;</span>
+<span class="nc" id="L59">	}</span>
+
+	public Transformation getExpression()
+	{
+<span class="nc" id="L63">		return expression;</span>
+	}
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L69">		return expression.getTerminals();</span>
+	}
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+		try
+		{
+<span class="nc" id="L77">			return expression.eval(session);</span>
+		}
+<span class="nc" id="L79">		catch (VTLException e)</span>
+		{
+<span class="nc" id="L81">			throw new VTLNestedException(&quot;Error evaluating statement '&quot; + this + &quot;'&quot;, e);</span>
+		}
+	}
+	
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme scheme)
+	{
+		try
+		{
+			VTLValueMetadata metadata;
+<span class="nc" id="L91">			MetadataRepository repo = scheme.getRepository();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			ValueDomainSubset&lt;?&gt; expectedResultType = resultType == null ? null : (ValueDomainSubset&lt;?&gt;) repo.getDomain(resultType);</span>
+			try
+			{
+<span class="nc" id="L95">				metadata = expression.getMetadata(scheme);</span>
+			}
+<span class="nc" id="L97">			catch (VTLException e)</span>
+			{
+				// actual parameters are not available, don't perform checks
+<span class="nc" id="L100">				return (VTLScalarValueMetadata&lt;?&gt;) () -&gt; expectedResultType;</span>
+<span class="nc" id="L101">			}</span>
+				
+			// Check result type if declared
+<span class="nc bnc" id="L104" title="All 2 branches missed.">			if (!(metadata instanceof VTLScalarValueMetadata&lt;?&gt;))</span>
+<span class="nc" id="L105">				throw new UnsupportedOperationException(&quot;non-scalar result of operator not implemented.&quot;);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">			else if (expectedResultType != null)</span>
+			{
+<span class="nc" id="L108">				ValueDomainSubset&lt;?&gt; actualResultType = ((VTLScalarValueMetadata&lt;?&gt;) metadata).getDomain();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">				if (!expectedResultType.isAssignableFrom(actualResultType))</span>
+<span class="nc" id="L110">					throw new VTLIncompatibleTypesException(&quot;Expected result of operator of type &quot;, expectedResultType, actualResultType);</span>
+			}
+			
+<span class="nc bnc" id="L113" title="All 2 branches missed.">			for (Parameter param: params)</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">				if (param instanceof ComponentParameter)</span>
+				{
+<span class="nc" id="L116">					ComponentParameter&lt;?&gt; compParam = (ComponentParameter&lt;?&gt;) param;</span>
+<span class="nc" id="L117">					VTLValueMetadata actualParamMeta = scheme.getMetadata(param.getName());</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">					ValueDomainSubset&lt;?&gt; expectedDomain = compParam.getDomain() == null ? null : repo.getDomain(compParam.getDomain());</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">					if (actualParamMeta instanceof VTLDataSetMetadata)</span>
+					{
+<span class="nc" id="L121">						VTLDataSetMetadata dsMeta = (VTLDataSetMetadata) actualParamMeta;</span>
+<span class="nc bnc" id="L122" title="All 4 branches missed.">						if (expectedDomain != null &amp;&amp; dsMeta.getComponents(Measure.class, expectedDomain).size() != 1)</span>
+<span class="nc" id="L123">							throw new VTLSingletonComponentRequiredException(Measure.class, expectedDomain, </span>
+<span class="nc" id="L124">									dsMeta.getComponents(Measure.class, expectedDomain));</span>
+<span class="nc bnc" id="L125" title="All 4 branches missed.">						else if (expectedDomain == null &amp;&amp; dsMeta.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L126">							throw new VTLSingletonComponentRequiredException(Measure.class, dsMeta.getComponents(Measure.class));</span>
+<span class="nc" id="L127">					}</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">					else if (expectedDomain != null)</span>
+					{
+<span class="nc" id="L130">						ValueDomainSubset&lt;?&gt; actualDomain = ((VTLScalarValueMetadata&lt;?&gt;) actualParamMeta).getDomain();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">						if (!expectedDomain.isAssignableFrom(actualDomain))</span>
+<span class="nc" id="L132">							throw new VTLIncompatibleTypesException(&quot;Parameter &quot; + param.getName(), expectedDomain, actualDomain);</span>
+					}
+<span class="nc" id="L134">				}</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">				else if (param instanceof ScalarParameter)</span>
+				{
+<span class="nc" id="L137">					ScalarParameter scParam = (ScalarParameter) param;</span>
+<span class="nc" id="L138">					VTLValueMetadata actualParamMeta = scheme.getMetadata(param.getName());</span>
+<span class="nc" id="L139">					ValueDomainSubset&lt;?&gt; expectedDomain = repo.getDomain(scParam.getDomain());</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">					if (actualParamMeta instanceof VTLDataSetMetadata)</span>
+					{
+<span class="nc" id="L142">						VTLDataSetMetadata dsMeta = (VTLDataSetMetadata) actualParamMeta;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">						if (dsMeta.getComponents(Measure.class, expectedDomain).size() != 1)</span>
+<span class="nc" id="L144">							throw new VTLSingletonComponentRequiredException(Measure.class, expectedDomain, dsMeta);</span>
+<span class="nc" id="L145">					}</span>
+					else 
+					{
+<span class="nc" id="L148">						ValueDomainSubset&lt;?&gt; actualDomain = ((VTLScalarValueMetadata&lt;?&gt;) actualParamMeta).getDomain();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">						if (!expectedDomain.isAssignableFrom(actualDomain))</span>
+<span class="nc" id="L150">							throw new VTLIncompatibleTypesException(&quot;Parameter &quot; + param.getName(), expectedDomain, actualDomain);</span>
+					}
+<span class="nc" id="L152">				}</span>
+				else
+<span class="nc" id="L154">					throw new UnsupportedOperationException(param.getClass().getSimpleName() + &quot; not implemented.&quot;);</span>
+			
+<span class="nc" id="L156">			return metadata;</span>
+		}
+<span class="nc" id="L158">		catch (VTLException e)</span>
+		{
+<span class="nc" id="L160">			throw new VTLNestedException(&quot;Error evaluating statement '&quot; + this + &quot;'. Error: &quot; + e.getMessage(), e);</span>
+		}
+	}
+
+	@Override
+	public List&lt;String&gt; getParameterNames()
+	{
+<span class="nc" id="L167">		return params.stream().map(Parameter::getName).collect(toList());</span>
+	}
+	
+	@Override
+	public boolean isCacheable()
+	{
+<span class="nc" id="L173">		return false;</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc bnc" id="L179" title="All 2 branches missed.">		return &quot;define operator &quot; + getId() + &quot;(&quot; + params.stream().map(Parameter::toString).collect(joining(&quot;, &quot;)) + &quot;)&quot;</span>
+<span class="nc" id="L180">				+ (resultType != null ? &quot; returns &quot; + resultType : &quot;&quot;) + &quot; is&quot; + System.lineSeparator()</span>
+<span class="nc" id="L181">				+ &quot;\t&quot; + expression + System.lineSeparator()</span>
+				+ &quot;end operator;&quot;;
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalcClauseTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.clause</a> &gt; <span class="el_source">CalcClauseTransformation.java</span></div><h1>CalcClauseTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.clause;
+
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import it.bancaditalia.oss.vtl.impl.transform.dataset.LightFDataSet;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLInvalidParameterException;
+import it.bancaditalia.oss.vtl.impl.transform.ops.TransformationImpl;
+import it.bancaditalia.oss.vtl.impl.transform.scope.DatapointScope;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLIncompatibleTypesException;
+import it.bancaditalia.oss.vtl.impl.types.exceptions.VTLInvariantIdentifiersException;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.ValueDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.LeafTransformation;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class CalcClauseTransformation extends DatasetClauseTransformation
+{
+	private static final long serialVersionUID = 1L;
+
+	public static class CalcClauseItem extends TransformationImpl
+	{
+		private static final long serialVersionUID = 1L;
+
+		private final String name;
+		private final Class&lt;? extends ComponentRole&gt; role;
+		private final Transformation calcClause;
+
+		public CalcClauseItem(Class&lt;? extends ComponentRole&gt; role, String name, Transformation calcClause)
+<span class="nc" id="L70">		{</span>
+<span class="nc" id="L71">			this.name = name;</span>
+<span class="nc" id="L72">			this.calcClause = calcClause;</span>
+<span class="nc" id="L73">			this.role = role;</span>
+<span class="nc" id="L74">		}</span>
+
+		public String getName()
+		{
+<span class="nc" id="L78">			return name;</span>
+		}
+
+		public Class&lt;? extends ComponentRole&gt; getRole()
+		{
+<span class="nc" id="L83">			return role;</span>
+		}
+
+		@Override
+		public String toString()
+		{
+<span class="nc bnc" id="L89" title="All 2 branches missed.">			return (role != null ? role.getSimpleName().toLowerCase() + &quot; &quot; : &quot;&quot;) + name + &quot; := &quot; + calcClause;</span>
+		}
+
+		@Override
+		public boolean isTerminal()
+		{
+<span class="nc" id="L95">			return calcClause.isTerminal();</span>
+		}
+
+		@Override
+		public Set&lt;LeafTransformation&gt; getTerminals()
+		{
+<span class="nc" id="L101">			return calcClause.getTerminals();</span>
+		}
+
+		@Override
+		public ScalarValue&lt;?, ?, ?&gt; eval(TransformationScheme session)
+		{
+<span class="nc" id="L107">			return (ScalarValue&lt;?, ?, ?&gt;) calcClause.eval(session);</span>
+		}
+
+		@Override
+		public VTLValueMetadata getMetadata(TransformationScheme scheme)
+		{
+<span class="nc" id="L113">			return calcClause.getMetadata(scheme);</span>
+		}
+
+	}
+
+	private final List&lt;CalcClauseItem&gt; items;
+	private VTLDataSetMetadata metadata;
+
+	public CalcClauseTransformation(List&lt;CalcClauseItem&gt; items)
+<span class="nc" id="L122">	{</span>
+<span class="nc" id="L123">		this.items = items;</span>
+<span class="nc" id="L124">	}</span>
+
+	@Override
+	public Set&lt;LeafTransformation&gt; getTerminals()
+	{
+<span class="nc" id="L129">		return items.stream().map(Transformation::getTerminals).flatMap(Set::stream).collect(toSet());</span>
+	}
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+<span class="nc" id="L135">		DataSet operand = (DataSet) getThisValue(session);</span>
+
+<span class="nc" id="L137">		return new LightFDataSet&lt;&gt;(metadata, ds -&gt; ds.stream()</span>
+<span class="nc" id="L138">				.map(dp -&gt; {</span>
+<span class="nc" id="L139">					DatapointScope dpSession = new DatapointScope(dp, metadata, session);</span>
+					// place original non-overriden components 
+<span class="nc" id="L141">					DataPointBuilder builder = new DataPointBuilder(dp).delete(Utils.getStream(items)</span>
+<span class="nc" id="L142">									.map(CalcClauseItem::getName)</span>
+<span class="nc" id="L143">									.collect(toList())</span>
+<span class="nc" id="L144">							.toArray(new String[0]));</span>
+					
+					// place calculated components 
+<span class="nc" id="L147">					Utils.getStream(items)</span>
+<span class="nc" id="L148">						.forEach(item -&gt; builder.add(metadata.getComponent(item.getName()).get(), item.eval(dpSession)));</span>
+					
+<span class="nc" id="L150">					return builder.build(metadata);</span>
+				}), operand);
+	}
+
+	@Override
+	public VTLDataSetMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc bnc" id="L157" title="All 2 branches missed.">		if (metadata != null)</span>
+<span class="nc" id="L158">			return metadata;</span>
+		
+<span class="nc" id="L160">		VTLValueMetadata operand = getThisMetadata(session);</span>
+
+<span class="nc bnc" id="L162" title="All 2 branches missed.">		if (!(operand instanceof VTLDataSetMetadata))</span>
+<span class="nc" id="L163">			throw new VTLInvalidParameterException(operand, VTLDataSetMetadata.class);</span>
+
+<span class="nc" id="L165">		metadata = (VTLDataSetMetadata) operand;</span>
+<span class="nc" id="L166">		Builder builder = new Builder(metadata);</span>
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">		for (CalcClauseItem item : items)</span>
+		{
+<span class="nc" id="L170">			VTLValueMetadata itemMeta = item.getMetadata(session);</span>
+			ValueDomainSubset&lt;?&gt; domain;
+
+			// get the domain of the calculated component
+<span class="nc bnc" id="L174" title="All 2 branches missed.">			if (itemMeta instanceof VTLDataSetMetadata)</span>
+			{
+				// calc item expression is a component, check for mono-measure dataset
+<span class="nc" id="L177">				VTLDataSetMetadata value = (VTLDataSetMetadata) itemMeta;</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">				if (value.getComponents(Measure.class).size() != 1)</span>
+<span class="nc" id="L179">					throw new VTLExpectedComponentException(Measure.class, value);</span>
+
+<span class="nc" id="L181">				domain = value.getComponents(Measure.class).iterator().next().getDomain();</span>
+<span class="nc" id="L182">			} </span>
+			else
+<span class="nc" id="L184">				domain = ((VTLScalarValueMetadata&lt;?&gt;) itemMeta).getDomain();</span>
+
+<span class="nc" id="L186">			Optional&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; maybePresent = metadata.getComponent(item.getName());</span>
+			
+<span class="nc bnc" id="L188" title="All 2 branches missed.">			if (maybePresent.isPresent())</span>
+			{
+				// existing component
+<span class="nc" id="L191">				DataStructureComponent&lt;?, ?, ?&gt; definedComponent = maybePresent.get();</span>
+
+				// disallow override of ids
+<span class="nc bnc" id="L194" title="All 2 branches missed.">				if (definedComponent.is(Identifier.class))</span>
+<span class="nc" id="L195">					throw new VTLInvariantIdentifiersException(&quot;calc&quot;, singleton(definedComponent.as(Identifier.class)));</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">				else if (!definedComponent.getDomain().isAssignableFrom(definedComponent.getDomain()))</span>
+<span class="nc" id="L197">					throw new VTLIncompatibleTypesException(&quot;Calc&quot;, definedComponent.getDomain(), definedComponent.getDomain());</span>
+<span class="nc bnc" id="L198" title="All 4 branches missed.">				else if (item.getRole() != null &amp;&amp; !definedComponent.is(item.getRole()))</span>
+				{
+					// switch role (from a non-id to any)
+<span class="nc" id="L201">					builder.removeComponent(definedComponent);</span>
+<span class="nc" id="L202">					DataStructureComponent&lt;?, ?, ?&gt; newComponent = new DataStructureComponentImpl&lt;&gt;(item.getName(), item.getRole(), definedComponent.getDomain());</span>
+<span class="nc" id="L203">					builder.addComponent(newComponent);</span>
+				}
+<span class="nc" id="L205">			}</span>
+			else
+			{
+				// new component
+<span class="nc bnc" id="L209" title="All 2 branches missed.">				Class&lt;? extends ComponentRole&gt; newComponent = item.getRole() == null ? Measure.class : item.getRole();</span>
+<span class="nc" id="L210">				builder = builder.addComponent(new DataStructureComponentImpl&lt;&gt;(item.getName(), newComponent, domain));</span>
+			}
+<span class="nc" id="L212">		}</span>
+
+<span class="nc" id="L214">		return metadata = builder.build();</span>
+	}
+
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L220">		return items.stream().map(Object::toString).collect(joining(&quot;, &quot;, &quot;[calc &quot;, &quot;]&quot;));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

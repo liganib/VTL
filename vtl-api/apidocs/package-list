@@ -1,0 +1,8 @@
+it.bancaditalia.oss.vtl.engine
+it.bancaditalia.oss.vtl.environment
+it.bancaditalia.oss.vtl.exceptions
+it.bancaditalia.oss.vtl.model.data
+it.bancaditalia.oss.vtl.model.domain
+it.bancaditalia.oss.vtl.model.transform
+it.bancaditalia.oss.vtl.session
+it.bancaditalia.oss.vtl.util

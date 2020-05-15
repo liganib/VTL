@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenameClauseTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.clause</a> &gt; <span class="el_source">RenameClauseTransformation.java</span></div><h1>RenameClauseTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.clause;
+
+import static it.bancaditalia.oss.vtl.util.Utils.splitting;
+import static java.util.stream.Collectors.joining;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import it.bancaditalia.oss.vtl.exceptions.VTLException;
+import it.bancaditalia.oss.vtl.exceptions.VTLMissingComponentsException;
+import it.bancaditalia.oss.vtl.impl.transform.dataset.LightFDataSet;
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLInvalidParameterException;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+import it.bancaditalia.oss.vtl.util.Utils;
+
+public class RenameClauseTransformation extends DatasetClauseTransformation
+{
+	private static final long serialVersionUID = 1L;
+	private final Map&lt;String, String&gt; renames;
+	
+	public RenameClauseTransformation(Map&lt;String, String&gt; renames)
+<span class="nc" id="L49">	{</span>
+<span class="nc" id="L50">		this.renames = renames;</span>
+<span class="nc" id="L51">	}</span>
+
+	@Override
+	public VTLValue eval(TransformationScheme session)
+	{
+<span class="nc" id="L56">		DataSet operand = (DataSet) getThisValue(session);</span>
+<span class="nc" id="L57">		VTLDataSetMetadata metadata = getMetadata(session);</span>
+<span class="nc" id="L58">		VTLDataSetMetadata oldStructure = operand.getDataStructure();</span>
+		
+<span class="nc" id="L60">		Map&lt;String, ? extends DataStructureComponent&lt;?, ?, ?&gt;&gt; oldComponents = renames.keySet().stream()</span>
+<span class="nc" id="L61">				.collect(Collectors.toMap(name -&gt; name, name -&gt; oldStructure.getComponent(name).get()));</span>
+
+<span class="nc" id="L63">		Map&lt;String, ? extends DataStructureComponent&lt;?, ?, ?&gt;&gt; newComponents = renames.values().stream()</span>
+<span class="nc" id="L64">				.collect(Collectors.toMap(name -&gt; name, name -&gt; metadata.getComponent(name).get()));</span>
+
+<span class="nc" id="L66">		return new LightFDataSet&lt;&gt;(metadata, ds -&gt; ds.stream()</span>
+<span class="nc" id="L67">				.map(dp -&gt; new DataPointBuilder(dp)</span>
+<span class="nc" id="L68">						.addAll(renames.entrySet().stream()</span>
+<span class="nc" id="L69">								.map(splitting((oldName, newName) -&gt; new SimpleEntry&lt;&gt;(newComponents.get(newName), </span>
+<span class="nc" id="L70">										dp.get(oldComponents.get(oldName)))))</span>
+<span class="nc" id="L71">								.collect(Utils.entriesToMap()))</span>
+<span class="nc" id="L72">						.delete(oldComponents.values())</span>
+<span class="nc" id="L73">						.build(metadata)</span>
+				), operand);
+	}
+
+	@Override
+	public VTLDataSetMetadata getMetadata(TransformationScheme session)
+	{
+<span class="nc" id="L80">		VTLValueMetadata operand = getThisMetadata(session);</span>
+		
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		if (!(operand instanceof VTLDataSetMetadata))</span>
+<span class="nc" id="L83">			throw new VTLInvalidParameterException(operand, VTLDataSetMetadata.class);</span>
+		
+<span class="nc" id="L85">		VTLDataSetMetadata dataset = (VTLDataSetMetadata) operand;</span>
+<span class="nc" id="L86">		VTLDataSetMetadata accumulator = dataset;</span>
+		
+<span class="nc bnc" id="L88" title="All 2 branches missed.">		for (Entry&lt;String, String&gt; rename: renames.entrySet())</span>
+		{
+<span class="nc" id="L90">			DataStructureComponent&lt;?, ?, ?&gt; componentFrom = dataset.getComponent(rename.getKey())</span>
+<span class="nc" id="L91">					.orElseThrow(() -&gt; new VTLMissingComponentsException(rename.getKey(), dataset));</span>
+			
+<span class="nc bnc" id="L93" title="All 2 branches missed.">			if (accumulator.containsComponent(rename.getValue()))</span>
+<span class="nc" id="L94">				throw new VTLException(&quot;rename from &quot; + componentFrom + &quot; cannot override existing component &quot; + dataset.getComponent(rename.getValue()));</span>
+				
+<span class="nc" id="L96">			accumulator = accumulator.rename(componentFrom, rename.getValue());</span>
+<span class="nc" id="L97">		}</span>
+		
+<span class="nc" id="L99">		return accumulator;</span>
+	}
+	
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L105">		return renames.entrySet().stream()</span>
+<span class="nc" id="L106">				.map(e -&gt; e.getKey() + &quot; to &quot; + e.getValue())</span>
+<span class="nc" id="L107">				.collect(joining(&quot;, &quot;, &quot;[rename &quot;, &quot;]&quot;));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

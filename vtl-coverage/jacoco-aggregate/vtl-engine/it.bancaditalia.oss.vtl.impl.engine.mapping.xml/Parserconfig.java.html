@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Parserconfig.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">vtl-coverage</a> &gt; <a href="../index.html" class="el_bundle">vtl-engine</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.engine.mapping.xml</a> &gt; <span class="el_source">Parserconfig.java</span></div><h1>Parserconfig.java</h1><pre class="source lang-java linenums">//
+// Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.3.2 
+// Vedere &lt;a href=&quot;https://javaee.github.io/jaxb-v2/&quot;&gt;https://javaee.github.io/jaxb-v2/&lt;/a&gt; 
+// Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2020.05.15 alle 01:42:49 PM CEST 
+//
+
+
+package it.bancaditalia.oss.vtl.impl.engine.mapping.xml;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * &lt;p&gt;Classe Java per parserconfig complex type.
+ * 
+ * &lt;p&gt;Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * 
+ * &lt;pre&gt;
+ * &amp;lt;complexType name=&quot;parserconfig&quot;&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&amp;gt;
+ *       &amp;lt;sequence&amp;gt;
+ *         &amp;lt;element name=&quot;tokenset&quot; type=&quot;{http://oss.bancaditalia.it/vtl}tokenset&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *         &amp;lt;element name=&quot;recursivecontexts&quot; type=&quot;{http://oss.bancaditalia.it/vtl}recursivecontexts&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *         &amp;lt;element name=&quot;mapping&quot; type=&quot;{http://oss.bancaditalia.it/vtl}mapping&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *       &amp;lt;/sequence&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;parserconfig&quot;, propOrder = {
+    &quot;tokenset&quot;,
+    &quot;recursivecontexts&quot;,
+    &quot;mapping&quot;
+})
+<span class="nc" id="L45">public class Parserconfig {</span>
+
+    protected List&lt;Tokenset&gt; tokenset;
+    protected Recursivecontexts recursivecontexts;
+    protected List&lt;Mapping&gt; mapping;
+
+    /**
+     * Gets the value of the tokenset property.
+     * 
+     * &lt;p&gt;
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the tokenset property.
+     * 
+     * &lt;p&gt;
+     * For example, to add a new item, do as follows:
+     * &lt;pre&gt;
+     *    getTokenset().add(newItem);
+     * &lt;/pre&gt;
+     * 
+     * 
+     * &lt;p&gt;
+     * Objects of the following type(s) are allowed in the list
+     * {@link Tokenset }
+     * 
+     * 
+     */
+    public List&lt;Tokenset&gt; getTokenset() {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (tokenset == null) {</span>
+<span class="nc" id="L75">            tokenset = new ArrayList&lt;Tokenset&gt;();</span>
+        }
+<span class="nc" id="L77">        return this.tokenset;</span>
+    }
+
+    /**
+     * Recupera il valore della proprietà recursivecontexts.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Recursivecontexts }
+     *     
+     */
+    public Recursivecontexts getRecursivecontexts() {
+<span class="nc" id="L89">        return recursivecontexts;</span>
+    }
+
+    /**
+     * Imposta il valore della proprietà recursivecontexts.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Recursivecontexts }
+     *     
+     */
+    public void setRecursivecontexts(Recursivecontexts value) {
+<span class="nc" id="L101">        this.recursivecontexts = value;</span>
+<span class="nc" id="L102">    }</span>
+
+    /**
+     * Gets the value of the mapping property.
+     * 
+     * &lt;p&gt;
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the mapping property.
+     * 
+     * &lt;p&gt;
+     * For example, to add a new item, do as follows:
+     * &lt;pre&gt;
+     *    getMapping().add(newItem);
+     * &lt;/pre&gt;
+     * 
+     * 
+     * &lt;p&gt;
+     * Objects of the following type(s) are allowed in the list
+     * {@link Mapping }
+     * 
+     * 
+     */
+    public List&lt;Mapping&gt; getMapping() {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (mapping == null) {</span>
+<span class="nc" id="L128">            mapping = new ArrayList&lt;Mapping&gt;();</span>
+        }
+<span class="nc" id="L130">        return this.mapping;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

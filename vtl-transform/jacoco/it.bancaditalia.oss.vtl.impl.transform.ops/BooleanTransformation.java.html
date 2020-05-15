@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BooleanTransformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">vtl-transform</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.transform.ops</a> &gt; <span class="el_source">BooleanTransformation.java</span></div><h1>BooleanTransformation.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * Copyright 2020, Bank Of Italy
+ *
+ * Licensed under the EUPL, Version 1.2 (the &quot;License&quot;);
+ * You may not use this work except in compliance with the
+ * License.
+ * You may obtain a copy of the License at:
+ *
+ * https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an &quot;AS IS&quot; basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ *
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *******************************************************************************/
+package it.bancaditalia.oss.vtl.impl.transform.ops;
+
+import static it.bancaditalia.oss.vtl.impl.types.domain.Domains.BOOLEANDS;
+import static java.util.Collections.singletonMap;
+
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+
+import it.bancaditalia.oss.vtl.impl.transform.exceptions.VTLExpectedComponentException;
+import it.bancaditalia.oss.vtl.impl.types.data.BooleanValue;
+import it.bancaditalia.oss.vtl.impl.types.data.NullValue;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataPointImpl.DataPointBuilder;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureComponentImpl;
+import it.bancaditalia.oss.vtl.impl.types.dataset.DataStructureImpl.Builder;
+import it.bancaditalia.oss.vtl.impl.types.domain.Domains;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Identifier;
+import it.bancaditalia.oss.vtl.model.data.ComponentRole.Measure;
+import it.bancaditalia.oss.vtl.model.data.DataSet;
+import it.bancaditalia.oss.vtl.model.data.DataSet.VTLDataSetMetadata;
+import it.bancaditalia.oss.vtl.model.data.DataStructureComponent;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue;
+import it.bancaditalia.oss.vtl.model.data.ScalarValue.VTLScalarValueMetadata;
+import it.bancaditalia.oss.vtl.model.data.VTLValue;
+import it.bancaditalia.oss.vtl.model.data.VTLValue.VTLValueMetadata;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomain;
+import it.bancaditalia.oss.vtl.model.domain.BooleanDomainSubset;
+import it.bancaditalia.oss.vtl.model.transform.Transformation;
+import it.bancaditalia.oss.vtl.model.transform.TransformationScheme;
+
+public class BooleanTransformation extends BinaryTransformation
+{
+	private static final long serialVersionUID = 1L;
+
+<span class="fc" id="L54">	public static enum BooleanBiOperator implements BinaryOperator&lt;BooleanValue&gt;</span>
+	{
+<span class="fc bfc" id="L56" title="All 4 branches covered.">		AND((l, r) -&gt; BooleanValue.of(l.get() &amp;&amp; r.get())), </span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">		OR((l, r) -&gt; BooleanValue.of(l.get() || r.get())), </span>
+<span class="fc" id="L58">		XOR((l, r) -&gt; BooleanValue.of(l.get() ^ r.get()));</span>
+
+		private final BiFunction&lt;BooleanValue, BooleanValue, BooleanValue&gt; function;
+
+		private BooleanBiOperator(BiFunction&lt;BooleanValue, BooleanValue, BooleanValue&gt; function)
+<span class="fc" id="L63">		{</span>
+<span class="fc" id="L64">			this.function = function;</span>
+<span class="fc" id="L65">		}</span>
+
+		@Override
+		public BooleanValue apply(BooleanValue left, BooleanValue right)
+		{
+<span class="fc" id="L70">			return function.apply(left, right);</span>
+		}
+		
+		@Override
+		public String toString()
+		{
+<span class="fc" id="L76">			return name().toLowerCase();</span>
+		}
+	}
+
+<span class="pc" id="L80">	private static final VTLScalarValueMetadata&lt;BooleanDomainSubset&gt; META = () -&gt; Domains.BOOLEANDS;</span>
+
+	private final BooleanBiOperator operator;
+<span class="fc" id="L83">	private VTLDataSetMetadata    metadata = null;</span>
+
+	public BooleanTransformation(BooleanBiOperator operator, Transformation left, Transformation right)
+	{
+<span class="fc" id="L87">		super(left, right);</span>
+
+<span class="fc" id="L89">		this.operator = operator;</span>
+<span class="fc" id="L90">	}</span>
+
+	@Override
+	protected VTLValue evalTwoScalars(ScalarValue&lt;?, ?, ?&gt; left, ScalarValue&lt;?, ?, ?&gt; right)
+	{
+<span class="nc" id="L95">		return operator.apply((BooleanValue) left, (BooleanValue) right);</span>
+	}
+
+	@Override
+	protected VTLValue evalDatasetWithScalar(boolean datasetIsLeftOp, DataSet dataset, ScalarValue&lt;?, ?, ?&gt; scalar)
+	{
+<span class="nc" id="L101">		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; resultMeasure = metadata.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="nc" id="L102">		DataStructureComponent&lt;? extends Measure, BooleanDomainSubset, BooleanDomain&gt; datasetMeasure = dataset.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+
+<span class="nc" id="L104">		return dataset.mapKeepingKeys(metadata, dp -&gt; singletonMap(resultMeasure, operator.apply((BooleanValue) dp.get(datasetMeasure), (BooleanValue) scalar)));</span>
+	}
+
+	@Override
+	protected VTLValue evalTwoDatasets(DataSet left, DataSet right)
+	{
+<span class="fc" id="L110">		boolean leftHasMoreIdentifiers = left.getComponents(Identifier.class).containsAll(right.getComponents(Identifier.class));</span>
+
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		DataSet streamed = leftHasMoreIdentifiers ? right : left;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		DataSet indexed = leftHasMoreIdentifiers ? left : right;</span>
+<span class="fc" id="L114">		DataStructureComponent&lt;Measure, BooleanDomainSubset, BooleanDomain&gt; resultMeasure = metadata.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="fc" id="L115">		DataStructureComponent&lt;? extends Measure, BooleanDomainSubset, BooleanDomain&gt; indexedMeasure = indexed.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+<span class="fc" id="L116">		DataStructureComponent&lt;? extends Measure, BooleanDomainSubset, BooleanDomain&gt; streamedMeasure = streamed.getComponents(Measure.class, BOOLEANDS).iterator().next();</span>
+
+		// Scan the dataset with less identifiers and find the matches
+<span class="fc" id="L119">		return indexed.filteredMappedJoin(metadata, streamed,</span>
+<span class="fc" id="L120">				(dp1, dp2) -&gt; true,</span>
+<span class="fc" id="L121">				(dp1, dp2) -&gt; new DataPointBuilder()</span>
+<span class="fc" id="L122">					.addAll(dp1.getValues(Identifier.class))</span>
+<span class="fc" id="L123">					.addAll(dp2.getValues(Identifier.class))</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">					.add(resultMeasure, dp1.get(indexedMeasure) instanceof NullValue || dp2.get(indexedMeasure) instanceof NullValue</span>
+<span class="fc" id="L125">								? NullValue.instance(BOOLEANDS)</span>
+<span class="fc" id="L126">								: operator.apply((BooleanValue) dp1.get(indexedMeasure), (BooleanValue) dp2.get(streamedMeasure)))</span>
+<span class="fc" id="L127">					.build(metadata));</span>
+	}
+
+	@Override
+	public VTLValueMetadata getMetadata(TransformationScheme session)
+	{
+<span class="fc" id="L133">		VTLValueMetadata left = leftOperand.getMetadata(session), right = rightOperand.getMetadata(session);</span>
+
+<span class="pc bpc" id="L135" title="2 of 4 branches missed.">		if (left instanceof VTLDataSetMetadata &amp;&amp; right instanceof VTLDataSetMetadata)</span>
+		{
+<span class="fc" id="L137">			VTLDataSetMetadata leftData = (VTLDataSetMetadata) left, rightData = (VTLDataSetMetadata) right;</span>
+
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			if (!leftData.getComponents(Identifier.class).containsAll(rightData.getComponents(Identifier.class))</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">					&amp;&amp; !rightData.getComponents(Identifier.class).containsAll(leftData.getComponents(Identifier.class)))</span>
+<span class="nc" id="L141">				throw new UnsupportedOperationException(&quot;One dataset must have all the identifiers of the other.&quot;);</span>
+
+<span class="fc" id="L143">			Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; leftMeasures = leftData.getComponents(Measure.class);</span>
+<span class="fc" id="L144">			Set&lt;? extends DataStructureComponent&lt;? extends Measure, ?, ?&gt;&gt; rightMeasures = rightData.getComponents(Measure.class);</span>
+
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (leftMeasures.size() != 1)</span>
+<span class="nc" id="L147">				throw new UnsupportedOperationException(&quot;Expected single boolean measure but found: &quot; + leftMeasures);</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">			if (rightMeasures.size() != 1)</span>
+<span class="nc" id="L149">				throw new UnsupportedOperationException(&quot;Expected single boolean measure but found: &quot; + rightMeasures);</span>
+
+<span class="fc" id="L151">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; leftMeasure = leftMeasures.iterator().next();</span>
+<span class="fc" id="L152">			DataStructureComponent&lt;? extends Measure, ?, ?&gt; rightMeasure = rightMeasures.iterator().next();</span>
+
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!BOOLEANDS.isAssignableFrom(leftMeasure.getDomain()))</span>
+<span class="nc" id="L155">				throw new UnsupportedOperationException(&quot;Expected boolean measure but found: &quot; + leftMeasure);</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">			if (!BOOLEANDS.isAssignableFrom(rightMeasure.getDomain()))</span>
+<span class="nc" id="L157">				throw new UnsupportedOperationException(&quot;Expected boolean measure but found: &quot; + rightMeasure);</span>
+
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">			String measureName = leftMeasure.getName().equals(rightMeasure.getName()) ? leftMeasure.getName() : &quot;bool_var&quot;;</span>
+			
+<span class="fc" id="L161">			return metadata = new Builder()</span>
+<span class="fc" id="L162">					.addComponents(leftData.getComponents(Identifier.class))</span>
+<span class="fc" id="L163">					.addComponents(rightData.getComponents(Identifier.class))</span>
+<span class="fc" id="L164">					.addComponent(new DataStructureComponentImpl&lt;&gt;(measureName, Measure.class, BOOLEANDS))</span>
+<span class="fc" id="L165">					.build();</span>
+		}
+<span class="nc bnc" id="L167" title="All 6 branches missed.">		else if (left instanceof VTLScalarValueMetadata &amp;&amp; ((VTLScalarValueMetadata&lt;?&gt;) left).getDomain() instanceof BooleanDomainSubset &amp;&amp; right instanceof VTLScalarValueMetadata</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">				&amp;&amp; ((VTLScalarValueMetadata&lt;?&gt;) right).getDomain() instanceof BooleanDomainSubset)</span>
+<span class="nc" id="L169">			return META;</span>
+		else
+		{
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			metadata = (VTLDataSetMetadata) (left instanceof VTLDataSetMetadata ? left : right);</span>
+
+<span class="nc bnc" id="L174" title="All 2 branches missed.">			if (metadata.getComponents(Measure.class, Domains.BOOLEANDS).size() == 0)</span>
+<span class="nc" id="L175">				throw new VTLExpectedComponentException(Measure.class, Domains.BOOLEANDS, metadata);</span>
+
+<span class="nc" id="L177">			return metadata;</span>
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+<span class="nc" id="L184">		return leftOperand + &quot; &quot; + operator + &quot; &quot; + rightOperand;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

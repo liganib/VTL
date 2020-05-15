@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Nestedcheck.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">vtl-coverage</a> &gt; <a href="../index.html" class="el_bundle">vtl-engine</a> &gt; <a href="index.source.html" class="el_package">it.bancaditalia.oss.vtl.impl.engine.mapping.xml</a> &gt; <span class="el_source">Nestedcheck.java</span></div><h1>Nestedcheck.java</h1><pre class="source lang-java linenums">//
+// Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.3.2 
+// Vedere &lt;a href=&quot;https://javaee.github.io/jaxb-v2/&quot;&gt;https://javaee.github.io/jaxb-v2/&lt;/a&gt; 
+// Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2020.05.15 alle 01:42:49 PM CEST 
+//
+
+
+package it.bancaditalia.oss.vtl.impl.engine.mapping.xml;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * &lt;p&gt;Classe Java per nestedcheck complex type.
+ * 
+ * &lt;p&gt;Il seguente frammento di schema specifica il contenuto previsto contenuto in questa classe.
+ * 
+ * &lt;pre&gt;
+ * &amp;lt;complexType name=&quot;nestedcheck&quot;&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;extension base=&quot;{http://oss.bancaditalia.it/vtl}check&quot;&amp;gt;
+ *       &amp;lt;choice&amp;gt;
+ *         &amp;lt;element name=&quot;tokens&quot; type=&quot;{http://oss.bancaditalia.it/vtl}tokenscheck&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *         &amp;lt;element name=&quot;context&quot; type=&quot;{http://oss.bancaditalia.it/vtl}contextcheck&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *         &amp;lt;element name=&quot;nested&quot; type=&quot;{http://oss.bancaditalia.it/vtl}nestedcheck&quot; minOccurs=&quot;0&quot;/&amp;gt;
+ *       &amp;lt;/choice&amp;gt;
+ *     &amp;lt;/extension&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;nestedcheck&quot;, propOrder = {
+    &quot;tokensOrContextOrNested&quot;
+})
+<span class="nc" id="L43">public class Nestedcheck</span>
+    extends Check
+{
+
+    @XmlElements({
+        @XmlElement(name = &quot;tokens&quot;, type = Tokenscheck.class),
+        @XmlElement(name = &quot;context&quot;, type = Contextcheck.class),
+        @XmlElement(name = &quot;nested&quot;, type = Nestedcheck.class)
+    })
+    protected Check tokensOrContextOrNested;
+
+    /**
+     * Recupera il valore della proprietà tokensOrContextOrNested.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Tokenscheck }
+     *     {@link Contextcheck }
+     *     {@link Nestedcheck }
+     *     
+     */
+    public Check getTokensOrContextOrNested() {
+<span class="nc" id="L65">        return tokensOrContextOrNested;</span>
+    }
+
+    /**
+     * Imposta il valore della proprietà tokensOrContextOrNested.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Tokenscheck }
+     *     {@link Contextcheck }
+     *     {@link Nestedcheck }
+     *     
+     */
+    public void setTokensOrContextOrNested(Check value) {
+<span class="nc" id="L79">        this.tokensOrContextOrNested = value;</span>
+<span class="nc" id="L80">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
