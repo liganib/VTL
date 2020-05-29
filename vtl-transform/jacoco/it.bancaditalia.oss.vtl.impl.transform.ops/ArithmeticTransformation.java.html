@@ -228,7 +228,7 @@ public class ArithmeticTransformation extends BinaryTransformation
 <span class="fc" id="L228">					}))</span>
 <span class="fc bfc" id="L229" title="All 2 branches covered.">				.map(splitting((lm, rm) -&gt; INTEGERDS.isAssignableFrom(lm.getDomain()) </span>
 <span class="pc bpc" id="L230" title="1 of 2 branches missed.">						? INTEGERDS.isAssignableFrom(rm.getDomain())</span>
-						? lm : rm : lm))
+<span class="pc" id="L231">						? lm : rm : lm))</span>
 <span class="fc" id="L232">				.collect(toSet());</span>
 			
 <span class="fc" id="L234">			return metadata = new Builder().addComponents(leftData.getComponents(Identifier.class))</span>

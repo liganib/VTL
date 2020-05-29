@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"it.bancaditalia.oss.vtl.impl.domains","l":"StandardMetadataRepositoryFactory"},{"p":"it.bancaditalia.oss.vtl.impl.domains","l":"StringCodeListImpl.StringCodeItemImpl"},{"p":"it.bancaditalia.oss.vtl.impl.domains","l":"StringCodeListImpl"}]

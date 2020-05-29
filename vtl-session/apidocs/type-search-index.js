@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"it.bancaditalia.oss.vtl.impl.session","l":"CachedDataSet"},{"p":"it.bancaditalia.oss.vtl.impl.session.exceptions","l":"VTLSessionException"},{"p":"it.bancaditalia.oss.vtl.impl.session","l":"VTLSessionImpl"}]

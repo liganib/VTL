@@ -142,7 +142,7 @@ public class StringUnaryTransformation extends UnaryTransformation
 <span class="nc" id="L142">			Set&lt;DataStructureComponent&lt;? extends Measure, ? extends StringDomainSubset, ? extends StringDomain&gt;&gt; measures = dataset.getComponents(Measure.class, STRINGDS).stream()</span>
 <span class="nc bnc" id="L143" title="All 2 branches missed.">					.map(m -&gt; m.getDomain() instanceof StringCodeList</span>
 <span class="nc" id="L144">							? new DataStructureComponentImpl&lt;&gt;(m.getName(), Measure.class, operator.getCodeListMapper().apply((StringCodeList) m.getDomain()))</span>
-							: m
+<span class="nc" id="L145">							: m</span>
 <span class="nc" id="L146">					).collect(toSet());</span>
 			
 <span class="nc" id="L148">			Set&lt;DataStructureComponent&lt;?, ?, ?&gt;&gt; components = new HashSet&lt;&gt;(dataset);</span>
