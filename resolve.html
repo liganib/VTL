@@ -1,0 +1,186 @@
+ 
+
+
+  <div class="row no-gutters">
+    <div class="col-lg-12 col-xl-9 py-3">
+            <div class="sect2"> 
+ <h3 id="resolve_toc_resolve-get-method"><code>/resolve</code> GET Method</h3> 
+ <div class="paragraph"> 
+  <p>Returns the value of a given object defined in a given session.</p> 
+ </div> 
+ <div class="sect3"> 
+  <h4 id="resolve_toc_http-request">HTTP Request</h4> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_request-fields">Request fields</h5> 
+   <table class="tableblock frame-all grid-all spread"> 
+    <colgroup> 
+     <col style="width: 50%;"> 
+     <col style="width: 50%;"> 
+    </colgroup> 
+    <thead> 
+     <tr> 
+      <th class="tableblock halign-left valign-top">Parameter</th> 
+      <th class="tableblock halign-left valign-top">Description</th> 
+     </tr> 
+    </thead> 
+    <tbody> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The unique identifier of the VTL session</p></td> 
+     </tr> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>alias</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The alias of the object whose value is returned</p></td> 
+     </tr> 
+    </tbody> 
+   </table> 
+  </div> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_request-cookies">Request cookies</h5> 
+   <table class="tableblock frame-all grid-all spread"> 
+    <colgroup> 
+     <col style="width: 50%;"> 
+     <col style="width: 50%;"> 
+    </colgroup> 
+    <thead> 
+     <tr> 
+      <th class="tableblock halign-left valign-top">Name</th> 
+      <th class="tableblock halign-left valign-top">Description</th> 
+     </tr> 
+    </thead> 
+    <tbody> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSESSIONID</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The Java Servlet server session cookie.</p></td> 
+     </tr> 
+    </tbody> 
+   </table> 
+  </div> 
+ </div> 
+ <div class="sect3"> 
+  <h4 id="resolve_toc_http-response">HTTP Response</h4> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_response-fields">Response fields</h5> 
+   <table class="tableblock frame-all grid-all spread"> 
+    <colgroup> 
+     <col style="width: 33.3333%;"> 
+     <col style="width: 33.3333%;"> 
+     <col style="width: 33.3334%;"> 
+    </colgroup> 
+    <thead> 
+     <tr> 
+      <th class="tableblock halign-left valign-top">Path</th> 
+      <th class="tableblock halign-left valign-top">Type</th> 
+      <th class="tableblock halign-left valign-top">Description</th> 
+     </tr> 
+    </thead> 
+    <tbody> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">Always SCALAR for scalar values</p></td> 
+     </tr> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>domain</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The VTL domain of the scalar value</p></td> 
+     </tr> 
+     <tr> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td> 
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The computed scalar value</p></td> 
+     </tr> 
+    </tbody> 
+   </table> 
+  </div> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_sample-response-body">Sample response body</h5> 
+   <div class="listingblock"> 
+    <div class="content"> 
+     <pre class="highlight nowrap"><code>{"type":"SCALAR","domain":"integer","value":3}</code></pre> 
+    </div> 
+   </div> 
+  </div> 
+ </div> 
+ <div class="sect3"> 
+  <h4 id="resolve_toc_invocation-examples">Invocation examples</h4> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_curl-command">Curl command</h5> 
+   <div class="listingblock"> 
+    <div class="content"> 
+     <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:40118/resolve?alias=c&amp;uuid=9544e822-c806-4b69-80c5-4e42bfe2cf36' -i -X GET \
+    -H 'Accept: application/json' \
+    --cookie 'JSESSIONID=A22ED1DEA9E93C561C30537B5D91DCF5'</code></pre> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="sect4"> 
+   <h5 id="resolve_toc_http-command">http command</h5> 
+   <div class="listingblock"> 
+    <div class="content"> 
+     <pre class="highlight"><code class="language-bash" data-lang="bash">$ http GET 'http://localhost:40118/resolve?alias=c&amp;uuid=9544e822-c806-4b69-80c5-4e42bfe2cf36' \
+    'Accept:application/json' \
+    'Cookie:JSESSIONID=A22ED1DEA9E93C561C30537B5D91DCF5'</code></pre> 
+    </div> 
+   </div> 
+  </div> 
+ </div> 
+ <div class="sect3"> 
+  <h4 id="resolve_toc_http-request-and-response-dump">HTTP request and response dump</h4> 
+  <div class="listingblock"> 
+   <div class="content"> 
+    <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /resolve?alias=c&amp;uuid=9544e822-c806-4b69-80c5-4e42bfe2cf36 HTTP/1.1
+Accept: application/json
+Host: localhost:40118
+Cookie: JSESSIONID=A22ED1DEA9E93C561C30537B5D91DCF5</code></pre> 
+   </div> 
+  </div> 
+  <div class="listingblock"> 
+   <div class="content"> 
+    <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 19 Aug 2020 14:44:20 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+Content-Length: 46
+
+{"type":"SCALAR","domain":"integer","value":3}</code></pre> 
+   </div> 
+  </div> 
+ </div> 
+</div>
+        </div>
+    <div class="d-none d-sm-none d-md-none d-lg-none d-xl-block col-xl-3">
+        <div class="feedback-links">
+            <ul class="nav flex-column flex-nowrap">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/vpinna80/VTL/src/site/asciidoc/resolve.adoc"><i class="far fa-edit" target="_blank" rel="noopener noreferrer"></i> Improve this page</a>
+                </li>
+            </ul>
+        </div>
+            <div id="m-toc-sidebar" class="d-print-none m-toc-sidebar-enabled m-toc-sidebar-expanded toc-sidebar-fixed">
+                <nav id="m-toc-sidebar-nav flex-column">
+                <ul class="m-nav--sidebar nav flex-column flex-nowrap">
+    <li class="h3">
+        <a class="nav-link" href="#resolve_toc_resolve-get-method" title="/resolve GET Method">/resolve GET Method</a>
+    </li>
+    <ul class="nav flex-column flex-nowrap nav-collapsible">
+            <li class="h4">
+        <a class="nav-link" href="#resolve_toc_http-request" title="HTTP Request">HTTP Request</a>
+    </li>
+    <li class="h4">
+        <a class="nav-link" href="#resolve_toc_http-response" title="HTTP Response">HTTP Response</a>
+    </li>
+    <li class="h4">
+        <a class="nav-link" href="#resolve_toc_invocation-examples" title="Invocation examples">Invocation examples</a>
+    </li>
+    <li class="h4">
+        <a class="nav-link" href="#resolve_toc_http-request-and-response-dump" title="HTTP request and response dump">HTTP request and response dump</a>
+    </li>
+    </ul>
+                    </ul>
+                </nav>
+           </div>
+    </div>
+</div>

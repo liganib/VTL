@@ -3,4 +3,5 @@ it.bancaditalia.oss.vtl.impl.transform.dataset
 it.bancaditalia.oss.vtl.impl.transform.exceptions
 it.bancaditalia.oss.vtl.impl.transform.ops
 it.bancaditalia.oss.vtl.impl.transform.scope
+it.bancaditalia.oss.vtl.impl.transform.string
 it.bancaditalia.oss.vtl.impl.transform.time
