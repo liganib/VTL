@@ -86,7 +86,7 @@
    <h5 id="compile_toc_sample-response-body">Sample response body</h5> 
    <div class="listingblock"> 
     <div class="content"> 
-     <pre class="highlight nowrap"><code>{"uuid":"9544e822-c806-4b69-80c5-4e42bfe2cf36"}</code></pre> 
+     <pre class="highlight nowrap"><code>{"uuid":"f8bfc464-80ca-4f0c-b1c4-932108a1eb5a"}</code></pre> 
     </div> 
    </div> 
   </div> 
@@ -97,7 +97,7 @@
    <h5 id="compile_toc_curl-command">Curl command</h5> 
    <div class="listingblock"> 
     <div class="content"> 
-     <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:40118/compile' -i -X POST \
+     <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:35474/compile' -i -X POST \
     -H 'Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1' \
     -d 'code=a+%3A%3D+1%3B+b+%3A%3D+2%3B+c+%3A%3D+a+%2B+b%3B'</code></pre> 
     </div> 
@@ -107,7 +107,7 @@
    <h5 id="compile_toc_http-command">http command</h5> 
    <div class="listingblock"> 
     <div class="content"> 
-     <pre class="highlight"><code class="language-bash" data-lang="bash">$ http --form POST 'http://localhost:40118/compile' \
+     <pre class="highlight"><code class="language-bash" data-lang="bash">$ http --form POST 'http://localhost:35474/compile' \
     'Content-Type:application/x-www-form-urlencoded; charset=ISO-8859-1' \
     'code=a := 1; b := 2; c := a + b;'</code></pre> 
     </div> 
@@ -120,7 +120,7 @@
    <div class="content"> 
     <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /compile HTTP/1.1
 Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1
-Host: localhost:40118
+Host: localhost:35474
 
 code=a+%3A%3D+1%3B+b+%3A%3D+2%3B+c+%3A%3D+a+%2B+b%3B</code></pre> 
    </div> 
@@ -128,15 +128,15 @@ code=a+%3A%3D+1%3B+b+%3A%3D+2%3B+c+%3A%3D+a+%2B+b%3B</code></pre>
   <div class="listingblock"> 
    <div class="content"> 
     <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: JSESSIONID=A22ED1DEA9E93C561C30537B5D91DCF5; Path=/; HttpOnly
+Set-Cookie: JSESSIONID=4A9556411FF69AB2CA5DACF1CD7DE5B0; Path=/; HttpOnly
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Wed, 19 Aug 2020 14:44:17 GMT
+Date: Thu, 20 Aug 2020 16:20:03 GMT
 Keep-Alive: timeout=60
 Connection: keep-alive
 Content-Length: 47
 
-{"uuid":"9544e822-c806-4b69-80c5-4e42bfe2cf36"}</code></pre> 
+{"uuid":"f8bfc464-80ca-4f0c-b1c4-932108a1eb5a"}</code></pre> 
    </div> 
   </div> 
  </div> 
