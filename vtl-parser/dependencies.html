@@ -22,12 +22,12 @@
     <link href="../css/site.css" rel="stylesheet" />
     <link href="../css/print.css" rel="stylesheet" media="print" />
 <link rel="apple-touch-icon" sizes="144x144" href="../apple-touch-icon.png">
-			        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-			        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-		        	<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
-			        <link rel="preload" as="image" href="../images/wallpaper.jpg">
-			        <meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
-			        <meta name="application-name" content="VTL E&amp;E">
+				<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+				<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+				<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+				<link rel="preload" as="image" href="../images/wallpaper.jpg">
+				<meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
+				<meta name="application-name" content="VTL E&amp;E">
         </head> <!-- end : head -->
 <body class="page-dependencies project-vtl-parser anchorjs-enabled scrolltop-smooth-enabled m-toc-top-enabled">
     <nav id="m-top-navbar" class="navbar navbar-expand-lg fixed-top navbar-light bg-light border-bottom">
@@ -44,7 +44,7 @@
                     <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation <b class="caret"></b></a>
                         <div class="dropdown-menu">
-                            <a href="../RVTL/documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
+                            <a href="../documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
                             <a href="../advanced.html" title="Advanced usage"  class="dropdown-item ">Advanced usage</a>
                             <a href="../apidocs" title="API documentation"  class="dropdown-item ">API documentation</a>
                         </div>
@@ -55,9 +55,8 @@
                             <div class="dropdown-submenu">
                                 <a  href="project-info.html"  title="Project Information"  class="dropdown-item active" >Project Information</a>                                <div class="dropdown-menu">
                                     <a href="" title="Dependencies"  class="dropdown-item active">Dependencies</a>
+                                    <a href="dependency-convergence.html" title="Dependency Convergence"  class="dropdown-item ">Dependency Convergence</a>
                                     <a href="dependency-info.html" title="Dependency Information"  class="dropdown-item ">Dependency Information</a>
-                                    <a href="dependency-management.html" title="Dependency Management"  class="dropdown-item ">Dependency Management</a>
-                                    <a href="distribution-management.html" title="Distribution Management"  class="dropdown-item ">Distribution Management</a>
                                     <a href="index.html" title="About"  class="dropdown-item ">About</a>
                                     <a href="issue-management.html" title="Issue Management"  class="dropdown-item ">Issue Management</a>
                                     <a href="licenses.html" title="Licenses"  class="dropdown-item ">Licenses</a>
@@ -68,17 +67,31 @@
                                     <a href="team.html" title="Team"  class="dropdown-item ">Team</a>
                                 </div>
                             </div>
-                            <div class="dropdown-submenu">
-                                <a  href="project-reports.html"  title="Project Reports"  class="dropdown-item" >Project Reports</a>                                <div class="dropdown-menu">
-                                    <a href="apidocs/index.html" title="Javadoc"  class="dropdown-item ">Javadoc</a>
-                                </div>
-                            </div>
                         </div>
                     </li>
                 </ul><!--/ul.navbar-nav -->
             </div><!--/.nav-collapse -->
     </nav> <!--/.navbar -->
     <div class="main-body">
+    <div class="header " role="main">
+        <div class="container container-fluid">
+      <div class="jumbotron header--jumbotron ">
+        <div id="banner" class="row header--banner">
+          <div class="col-md-12">
+            <div class="float-left header--banner--left bannerLeft">
+                    <a href="..">
+            <img class="float-left m-2 img-fluid" src="../images/logo.svg" alt="VTL E&E" width="144" height="144" />
+            <h1>VTL <span class="color-highlight">E&amp;E</span></h1>
+            </a>
+                    <p class="lead">The prototypal engine and editor for the Validation and Transformation Language</p>
+            </div>
+            <div class="float-right header--banner--right bannerRight">
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+    </div> <!-- end : header -->
     <div class="row mt-5">
         <div class="d-xs-none d-sm-none d-md-none d-lg-block col-lg-2">
         </div>
@@ -106,6 +119,7 @@
                                 <a class="dropdown-item" href="#project-dependencies" title="Project Dependencies">Project Dependencies</a>
                                 <div class="dropdown-divider"></div>
                                               <a class="dropdown-item" href="#compile1" title="compile">compile</a>
+                <a class="dropdown-item" href="#test1" title="test">test</a>
                             </div>
                         </li>
                         <li class="nav-item divider-vertical"></li>
@@ -116,6 +130,7 @@
                                 <a class="dropdown-item" href="#project-transitive-dependencies" title="Project Transitive Dependencies">Project Transitive Dependencies</a>
                                 <div class="dropdown-divider"></div>
                                               <a class="dropdown-item" href="#compile2" title="compile">compile</a>
+                <a class="dropdown-item" href="#test2" title="test">test</a>
                             </div>
                         </li>
                         <li class="nav-item divider-vertical"></li>
@@ -165,6 +180,31 @@
      <td>4.7.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="http://www.antlr.org/license.html">The BSD License</a></td> 
+    </tr> 
+   </tbody> 
+  </table> 
+ </section> 
+ <a name="Project_Dependencies_test"></a> 
+ <section> 
+  <h3 id="test1">test</h3> 
+  <p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p> 
+  <table border="0" class="bodyTable table table-striped table-hover"> 
+   <thead> 
+    <tr class="a"> 
+     <th>GroupId</th> 
+     <th>ArtifactId</th> 
+     <th>Version</th> 
+     <th>Type</th> 
+     <th>Licenses</th> 
+    </tr> 
+   </thead> 
+   <tbody> 
+    <tr class="b"> 
+     <td>org.junit.jupiter</td> 
+     <td><a class="externalLink" href="https://junit.org/junit5/">junit-jupiter-api</a></td> 
+     <td>5.6.2</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
    </tbody> 
   </table> 
@@ -234,6 +274,45 @@
    </tbody> 
   </table> 
  </section> 
+ <a name="Project_Transitive_Dependencies_test"></a> 
+ <section> 
+  <h3 id="test2">test</h3> 
+  <p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p> 
+  <table border="0" class="bodyTable table table-striped table-hover"> 
+   <thead> 
+    <tr class="a"> 
+     <th>GroupId</th> 
+     <th>ArtifactId</th> 
+     <th>Version</th> 
+     <th>Type</th> 
+     <th>Licenses</th> 
+    </tr> 
+   </thead> 
+   <tbody> 
+    <tr class="b"> 
+     <td>org.apiguardian</td> 
+     <td><a class="externalLink" href="https://github.com/apiguardian-team/apiguardian">apiguardian-api</a></td> 
+     <td>1.1.0</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache License, Version 2.0</a></td> 
+    </tr> 
+    <tr class="a"> 
+     <td>org.junit.platform</td> 
+     <td><a class="externalLink" href="https://junit.org/junit5/">junit-platform-commons</a></td> 
+     <td>1.6.2</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
+    </tr> 
+    <tr class="b"> 
+     <td>org.opentest4j</td> 
+     <td><a class="externalLink" href="https://github.com/ota4j-team/opentest4j">opentest4j</a></td> 
+     <td>1.2.0</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache License, Version 2.0</a></td> 
+    </tr> 
+   </tbody> 
+  </table> 
+ </section> 
 </section> 
 <a name="Project_Dependency_Graph"></a> 
 <section> 
@@ -261,7 +340,7 @@
  <section> 
   <h3 id="dependency-tree">Dependency Tree</h3> 
   <ul> 
-   <li>it.bancaditalia.oss.vtl:vtl-parser:jar:1.0.3 <i class="fas fa-info"></i> 
+   <li>it.bancaditalia.oss.vtl:vtl-parser:jar:1.0.7-SNAPSHOT <i class="fas fa-info"></i> 
     <div id="_dep0" style="display:none"> 
      <table border="0" class="bodyTable table table-striped table-hover"> 
       <thead> 
@@ -384,6 +463,68 @@
          </table> 
         </div></li> 
       </ul></li> 
+     <li>org.junit.jupiter:junit-jupiter-api:jar:5.6.2 (test) <i class="fas fa-info"></i> 
+      <div id="_dep16" style="display:none"> 
+       <table border="0" class="bodyTable table table-striped table-hover"> 
+        <thead> 
+         <tr class="a"> 
+          <th>JUnit Jupiter API</th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr class="b"> 
+          <td> <p><b>Description: </b>Module "junit-jupiter-api" of JUnit 5.</p> <p><b>URL: </b><a class="externalLink" href="https://junit.org/junit5/">https://junit.org/junit5/</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <ul> 
+       <li>org.apiguardian:apiguardian-api:jar:1.1.0 (test) <i class="fas fa-info"></i> 
+        <div id="_dep18" style="display:none"> 
+         <table border="0" class="bodyTable table table-striped table-hover"> 
+          <thead> 
+           <tr class="a"> 
+            <th>org.apiguardian:apiguardian-api</th> 
+           </tr> 
+          </thead> 
+          <tbody> 
+           <tr class="b"> 
+            <td> <p><b>Description: </b>@API Guardian</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/apiguardian-team/apiguardian">https://github.com/apiguardian-team/apiguardian</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache License, Version 2.0</a></p></td> 
+           </tr> 
+          </tbody> 
+         </table> 
+        </div></li> 
+       <li>org.opentest4j:opentest4j:jar:1.2.0 (test) <i class="fas fa-info"></i> 
+        <div id="_dep20" style="display:none"> 
+         <table border="0" class="bodyTable table table-striped table-hover"> 
+          <thead> 
+           <tr class="a"> 
+            <th>org.opentest4j:opentest4j</th> 
+           </tr> 
+          </thead> 
+          <tbody> 
+           <tr class="b"> 
+            <td> <p><b>Description: </b>Open Test Alliance for the JVM</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/ota4j-team/opentest4j">https://github.com/ota4j-team/opentest4j</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache License, Version 2.0</a></p></td> 
+           </tr> 
+          </tbody> 
+         </table> 
+        </div></li> 
+       <li>org.junit.platform:junit-platform-commons:jar:1.6.2 (test) <i class="fas fa-info"></i> 
+        <div id="_dep22" style="display:none"> 
+         <table border="0" class="bodyTable table table-striped table-hover"> 
+          <thead> 
+           <tr class="a"> 
+            <th>JUnit Platform Commons</th> 
+           </tr> 
+          </thead> 
+          <tbody> 
+           <tr class="b"> 
+            <td> <p><b>Description: </b>Module "junit-platform-commons" of JUnit 5.</p> <p><b>URL: </b><a class="externalLink" href="https://junit.org/junit5/">https://junit.org/junit5/</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></p></td> 
+           </tr> 
+          </tbody> 
+         </table> 
+        </div></li> 
+      </ul></li> 
     </ul></li> 
   </ul> 
  </section> 
@@ -395,7 +536,9 @@
  <p><b>European Union Public Licence v1.2 (EUPL): </b>vtl-parser</p> 
  <p><b>Unknown: </b>StringTemplate 4</p> 
  <p><b>The BSD License: </b>ANTLR 4 Runtime, ANTLR 4 Tool</p> 
+ <p><b>The Apache License, Version 2.0: </b>org.apiguardian:apiguardian-api, org.opentest4j:opentest4j</p> 
  <p><b>Unicode/ICU License: </b>ICU4J</p> 
+ <p><b>Eclipse Public License v2.0: </b>JUnit Jupiter API, JUnit Platform Commons</p> 
  <p><b>Dual license consisting of the CDDL v1.1 and GPL v2: </b>JSR 353 (JSON Processing) Default Provider</p> 
  <p><b>BSD licence: </b>ANTLR 3 Runtime</p> 
 </section> 
@@ -468,12 +611,48 @@
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
+    <td>apiguardian-api-1.1.0.jar</td> 
+    <td>2.4 kB</td> 
+    <td>8</td> 
+    <td>3</td> 
+    <td>2</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
     <td>javax.json-1.0.4.jar</td> 
     <td>85.1 kB</td> 
     <td>88</td> 
     <td>72</td> 
     <td>5</td> 
     <td>1.6</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>junit-jupiter-api-5.6.2.jar</td> 
+    <td>154 kB</td> 
+    <td>150</td> 
+    <td>135</td> 
+    <td>8</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>junit-platform-commons-1.6.2.jar</td> 
+    <td>96.7 kB</td> 
+    <td>61</td> 
+    <td>41</td> 
+    <td>7</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>opentest4j-1.2.0.jar</td> 
+    <td>7.7 kB</td> 
+    <td>11</td> 
+    <td>7</td> 
+    <td>2</td> 
+    <td>-</td> 
     <td>Yes</td> 
    </tr> 
    <tr class="a"> 
@@ -486,13 +665,13 @@
     <th>Debug Information</th> 
    </tr> 
    <tr class="b"> 
-    <td>7</td> 
-    <td>14.4 MB</td> 
-    <td>5944</td> 
-    <td>2406</td> 
-    <td>56</td> 
+    <td>11</td> 
+    <td>14.7 MB</td> 
+    <td>6174</td> 
+    <td>2592</td> 
+    <td>75</td> 
     <td>1.7</td> 
-    <td>7</td> 
+    <td>11</td> 
    </tr> 
    <tr class="a"> 
     <td>compile: 7</td> 
@@ -502,6 +681,15 @@
     <td>compile: 56</td> 
     <td>-</td> 
     <td>compile: 7</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>test: 4</td> 
+    <td>test: 260.8 kB</td> 
+    <td>test: 230</td> 
+    <td>test: 186</td> 
+    <td>test: 19</td> 
+    <td>-</td> 
+    <td>test: 4</td> 
    </tr> 
   </tbody> 
  </table> 
@@ -538,7 +726,7 @@ Contribute
                     <li class="nav-header">
 Documentation
                     </li>
-                    <li class="nav-item "><a  href="../RVTL/documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
+                    <li class="nav-item "><a  href="../documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
                     <li class="nav-item "><a  href="../advanced.html"  title="Advanced usage"  class="nav-link" >Advanced usage</a></li>
                     <li class="nav-item "><a  href="../apidocs"  title="API documentation"  class="nav-link" >API documentation</a></li>
                 </ul>
@@ -550,9 +738,8 @@ Maven Documentation
                     </li>
                                 <li class="nav-item active"><a  href="project-info.html"  title="Project Information"  class="nav-link" >Project Information <i class="fas fa-angle-down"></i></a>        <ul class="nav flex-column nav-list">
                     <li class="nav-item active"><a  href=""  title="Dependencies"  class="nav-link" >Dependencies</a></li>
+                    <li class="nav-item "><a  href="dependency-convergence.html"  title="Dependency Convergence"  class="nav-link" >Dependency Convergence</a></li>
                     <li class="nav-item "><a  href="dependency-info.html"  title="Dependency Information"  class="nav-link" >Dependency Information</a></li>
-                    <li class="nav-item "><a  href="dependency-management.html"  title="Dependency Management"  class="nav-link" >Dependency Management</a></li>
-                    <li class="nav-item "><a  href="distribution-management.html"  title="Distribution Management"  class="nav-link" >Distribution Management</a></li>
                     <li class="nav-item "><a  href="index.html"  title="About"  class="nav-link" >About</a></li>
                     <li class="nav-item "><a  href="issue-management.html"  title="Issue Management"  class="nav-link" >Issue Management</a></li>
                     <li class="nav-item "><a  href="licenses.html"  title="Licenses"  class="nav-link" >Licenses</a></li>
@@ -563,7 +750,6 @@ Maven Documentation
                     <li class="nav-item "><a  href="team.html"  title="Team"  class="nav-link" >Team</a></li>
         </ul>
 </li>
-                                <li class="nav-item "><a  href="project-reports.html"  title="Project Reports"  class="nav-link" >Project Reports <i class="fas fa-angle-right"></i></a></li>
                 </ul>
             </div>
             <div class="col bottom-description">
@@ -587,7 +773,7 @@ Maven Documentation
         <p class="copyright">Copyright &copy;2020
 . All Rights Reserved.</p>
         <p class="version-date">
-<span class="projectVersion">Version: 1.0.3. </span>        </p>
+<span class="projectVersion">Version: 1.0.7-SNAPSHOT. </span>        </p>
         <p><a href="https://github.com/devacfr/reflow-maven-skin" title="Reflow Maven skin">Reflow Maven skin</a> by <a href="http://devacfr.github.io" target="_blank" title="devacfr">devacfr</a>.</p>
       </div>
     </div>

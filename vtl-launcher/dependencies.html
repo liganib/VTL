@@ -22,12 +22,12 @@
     <link href="../css/site.css" rel="stylesheet" />
     <link href="../css/print.css" rel="stylesheet" media="print" />
 <link rel="apple-touch-icon" sizes="144x144" href="../apple-touch-icon.png">
-			        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-			        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-		        	<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
-			        <link rel="preload" as="image" href="../images/wallpaper.jpg">
-			        <meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
-			        <meta name="application-name" content="VTL E&amp;E">
+				<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+				<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+				<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+				<link rel="preload" as="image" href="../images/wallpaper.jpg">
+				<meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
+				<meta name="application-name" content="VTL E&amp;E">
         </head> <!-- end : head -->
 <body class="page-dependencies project-vtl-launcher anchorjs-enabled scrolltop-smooth-enabled m-toc-top-enabled">
     <nav id="m-top-navbar" class="navbar navbar-expand-lg fixed-top navbar-light bg-light border-bottom">
@@ -44,7 +44,7 @@
                     <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation <b class="caret"></b></a>
                         <div class="dropdown-menu">
-                            <a href="../RVTL/documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
+                            <a href="../documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
                             <a href="../advanced.html" title="Advanced usage"  class="dropdown-item ">Advanced usage</a>
                             <a href="../apidocs" title="API documentation"  class="dropdown-item ">API documentation</a>
                         </div>
@@ -55,9 +55,8 @@
                             <div class="dropdown-submenu">
                                 <a  href="project-info.html"  title="Project Information"  class="dropdown-item active" >Project Information</a>                                <div class="dropdown-menu">
                                     <a href="" title="Dependencies"  class="dropdown-item active">Dependencies</a>
+                                    <a href="dependency-convergence.html" title="Dependency Convergence"  class="dropdown-item ">Dependency Convergence</a>
                                     <a href="dependency-info.html" title="Dependency Information"  class="dropdown-item ">Dependency Information</a>
-                                    <a href="dependency-management.html" title="Dependency Management"  class="dropdown-item ">Dependency Management</a>
-                                    <a href="distribution-management.html" title="Distribution Management"  class="dropdown-item ">Distribution Management</a>
                                     <a href="index.html" title="About"  class="dropdown-item ">About</a>
                                     <a href="issue-management.html" title="Issue Management"  class="dropdown-item ">Issue Management</a>
                                     <a href="licenses.html" title="Licenses"  class="dropdown-item ">Licenses</a>
@@ -79,6 +78,25 @@
             </div><!--/.nav-collapse -->
     </nav> <!--/.navbar -->
     <div class="main-body">
+    <div class="header " role="main">
+        <div class="container container-fluid">
+      <div class="jumbotron header--jumbotron ">
+        <div id="banner" class="row header--banner">
+          <div class="col-md-12">
+            <div class="float-left header--banner--left bannerLeft">
+                    <a href="..">
+            <img class="float-left m-2 img-fluid" src="../images/logo.svg" alt="VTL E&E" width="144" height="144" />
+            <h1>VTL <span class="color-highlight">E&amp;E</span></h1>
+            </a>
+                    <p class="lead">The prototypal engine and editor for the Validation and Transformation Language</p>
+            </div>
+            <div class="float-right header--banner--right bannerRight">
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+    </div> <!-- end : header -->
     <div class="row mt-5">
         <div class="d-xs-none d-sm-none d-md-none d-lg-block col-lg-2">
         </div>
@@ -165,60 +183,67 @@
     <tr class="b"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-api">vtl-api</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
     <tr class="a"> 
+     <td>it.bancaditalia.oss.vtl</td> 
+     <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-confman">vtl-confman</a></td> 
+     <td>1.0.7-SNAPSHOT</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
+    </tr> 
+    <tr class="b"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-domains">vtl-domains</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
-    <tr class="b"> 
+    <tr class="a"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-engine">vtl-engine</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
-    <tr class="a"> 
+    <tr class="b"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-envs">vtl-envs</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
-    <tr class="b"> 
+    <tr class="a"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-session">vtl-session</a></td> 
-     <td>1.0.3</td> 
-     <td>jar</td> 
-     <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
-    </tr> 
-    <tr class="a"> 
-     <td>it.bancaditalia.oss.vtl</td> 
-     <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-transform">vtl-transform</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
     <tr class="b"> 
      <td>it.bancaditalia.oss.vtl</td> 
-     <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-types">vtl-types</a></td> 
-     <td>1.0.3</td> 
+     <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-transform">vtl-transform</a></td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
     <tr class="a"> 
+     <td>it.bancaditalia.oss.vtl</td> 
+     <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-types">vtl-types</a></td> 
+     <td>1.0.7-SNAPSHOT</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
+    </tr> 
+    <tr class="b"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-slf4j-impl/">log4j-slf4j-impl</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
-    <tr class="b"> 
+    <tr class="a"> 
      <td>org.slf4j</td> 
      <td><a class="externalLink" href="http://www.slf4j.org">slf4j-api</a></td> 
      <td>1.7.26</td> 
@@ -304,14 +329,14 @@
     <tr class="a"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-parser">vtl-parser</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
     <tr class="b"> 
      <td>jakarta.activation</td> 
      <td><a class="externalLink" href="https://github.com/eclipse-ee4j/jaf/jakarta.activation-api">jakarta.activation-api</a></td> 
-     <td>1.2.1</td> 
+     <td>1.2.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">EDL 1.0</a></td> 
     </tr> 
@@ -360,7 +385,7 @@
     <tr class="a"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-api/">log4j-api</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
@@ -406,7 +431,7 @@
     <tr class="b"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-core/">log4j-core</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
@@ -419,8 +444,8 @@
     </tr> 
     <tr class="b"> 
      <td>org.glassfish.jaxb</td> 
-     <td><a class="externalLink" href="https://javaee.github.io/jaxb-v2/jaxb-txw-parent/txw2/">txw2</a></td> 
-     <td>2.3.2</td> 
+     <td><a class="externalLink" href="https://eclipse-ee4j.github.io/jaxb-ri/jaxb-txw-parent/txw2">txw2</a></td> 
+     <td>2.3.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License - v 1.0</a></td> 
     </tr> 
@@ -459,28 +484,28 @@
     <tr class="a"> 
      <td>org.junit.jupiter</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-jupiter-api</a></td> 
-     <td>5.6.1</td> 
+     <td>5.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="b"> 
      <td>org.junit.jupiter</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-jupiter-engine</a></td> 
-     <td>5.6.1</td> 
+     <td>5.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="a"> 
      <td>org.junit.platform</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-platform-commons</a></td> 
-     <td>1.6.1</td> 
+     <td>1.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="b"> 
      <td>org.junit.platform</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-platform-engine</a></td> 
-     <td>1.6.1</td> 
+     <td>1.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
@@ -521,7 +546,7 @@
  <section> 
   <h3 id="dependency-tree">Dependency Tree</h3> 
   <ul> 
-   <li>it.bancaditalia.oss.vtl:vtl-launcher:jar:1.0.3 <i class="fas fa-info"></i> 
+   <li>it.bancaditalia.oss.vtl:vtl-launcher:jar:1.0.7-SNAPSHOT <i class="fas fa-info"></i> 
     <div id="_dep0" style="display:none"> 
      <table border="0" class="bodyTable table table-striped table-hover"> 
       <thead> 
@@ -537,7 +562,7 @@
      </table> 
     </div> 
     <ul> 
-     <li>it.bancaditalia.oss.vtl:vtl-api:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
+     <li>it.bancaditalia.oss.vtl:vtl-api:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
       <div id="_dep2" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
@@ -552,7 +577,7 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-types:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
+     <li>it.bancaditalia.oss.vtl:vtl-types:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
       <div id="_dep4" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
@@ -567,8 +592,23 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-engine:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
+     <li>it.bancaditalia.oss.vtl:vtl-confman:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
       <div id="_dep6" style="display:none"> 
+       <table border="0" class="bodyTable table table-striped table-hover"> 
+        <thead> 
+         <tr class="a"> 
+          <th>vtl-confman</th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr class="b"> 
+          <td> <p><b>Description: </b>VTL Standard configuration manager</p> <p><b>URL: </b><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-confman">https://vpinna80.github.io/VTL/vtl-confman</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div></li> 
+     <li>it.bancaditalia.oss.vtl:vtl-engine:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+      <div id="_dep8" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -584,7 +624,7 @@
       </div> 
       <ul> 
        <li>jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.2 (compile) <i class="fas fa-info"></i> 
-        <div id="_dep8" style="display:none"> 
+        <div id="_dep10" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -599,24 +639,24 @@
          </table> 
         </div> 
         <ul> 
-         <li>jakarta.activation:jakarta.activation-api:jar:1.2.1 (compile) <i class="fas fa-info"></i> 
-          <div id="_dep10" style="display:none"> 
+         <li>jakarta.activation:jakarta.activation-api:jar:1.2.2 (compile) <i class="fas fa-info"></i> 
+          <div id="_dep12" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
-              <th>JavaBeans Activation Framework API jar</th> 
+              <th>Jakarta Activation API jar</th> 
              </tr> 
             </thead> 
             <tbody> 
              <tr class="b"> 
-              <td> <p><b>Description: </b>JavaBeans Activation Framework API jar</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/eclipse-ee4j/jaf/jakarta.activation-api">https://github.com/eclipse-ee4j/jaf/jakarta.activation-api</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">EDL 1.0</a></p></td> 
+              <td> <p><b>Description: </b>Jakarta Activation API jar</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/eclipse-ee4j/jaf/jakarta.activation-api">https://github.com/eclipse-ee4j/jaf/jakarta.activation-api</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">EDL 1.0</a></p></td> 
              </tr> 
             </tbody> 
            </table> 
           </div></li> 
         </ul></li> 
        <li>org.glassfish.jaxb:jaxb-runtime:jar:2.3.2 (runtime) <i class="fas fa-info"></i> 
-        <div id="_dep12" style="display:none"> 
+        <div id="_dep14" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -631,8 +671,8 @@
          </table> 
         </div> 
         <ul> 
-         <li>org.glassfish.jaxb:txw2:jar:2.3.2 (runtime) <i class="fas fa-info"></i> 
-          <div id="_dep14" style="display:none"> 
+         <li>org.glassfish.jaxb:txw2:jar:2.3.3 (runtime) <i class="fas fa-info"></i> 
+          <div id="_dep16" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -641,13 +681,13 @@
             </thead> 
             <tbody> 
              <tr class="b"> 
-              <td> <p><b>Description: </b>TXW is a library that allows you to write XML documents.</p> <p><b>URL: </b><a class="externalLink" href="https://javaee.github.io/jaxb-v2/jaxb-txw-parent/txw2/">https://javaee.github.io/jaxb-v2/jaxb-txw-parent/txw2/</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License - v 1.0</a></p></td> 
+              <td> <p><b>Description: </b>TXW is a library that allows you to write XML documents.</p> <p><b>URL: </b><a class="externalLink" href="https://eclipse-ee4j.github.io/jaxb-ri/jaxb-txw-parent/txw2">https://eclipse-ee4j.github.io/jaxb-ri/jaxb-txw-parent/txw2</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License - v 1.0</a></p></td> 
              </tr> 
             </tbody> 
            </table> 
           </div></li> 
          <li>com.sun.istack:istack-commons-runtime:jar:3.0.8 (runtime) <i class="fas fa-info"></i> 
-          <div id="_dep16" style="display:none"> 
+          <div id="_dep18" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -662,7 +702,7 @@
            </table> 
           </div></li> 
          <li>org.jvnet.staxex:stax-ex:jar:1.8.1 (runtime) <i class="fas fa-info"></i> 
-          <div id="_dep18" style="display:none"> 
+          <div id="_dep20" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -677,7 +717,7 @@
            </table> 
           </div></li> 
          <li>com.sun.xml.fastinfoset:FastInfoset:jar:1.2.16 (runtime) <i class="fas fa-info"></i> 
-          <div id="_dep20" style="display:none"> 
+          <div id="_dep22" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -692,8 +732,8 @@
            </table> 
           </div></li> 
         </ul></li> 
-       <li>it.bancaditalia.oss.vtl:vtl-parser:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-        <div id="_dep22" style="display:none"> 
+       <li>it.bancaditalia.oss.vtl:vtl-parser:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+        <div id="_dep24" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -709,7 +749,7 @@
         </div> 
         <ul> 
          <li>org.antlr:antlr4:jar:4.7.2 (compile) <i class="fas fa-info"></i> 
-          <div id="_dep24" style="display:none"> 
+          <div id="_dep26" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -725,7 +765,7 @@
           </div> 
           <ul> 
            <li>org.antlr:antlr4-runtime:jar:4.7.2 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep26" style="display:none"> 
+            <div id="_dep28" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -740,7 +780,7 @@
              </table> 
             </div></li> 
            <li>org.antlr:antlr-runtime:jar:3.5.2 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep28" style="display:none"> 
+            <div id="_dep30" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -755,7 +795,7 @@
              </table> 
             </div></li> 
            <li>org.antlr:ST4:jar:4.1 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep30" style="display:none"> 
+            <div id="_dep32" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -770,7 +810,7 @@
              </table> 
             </div></li> 
            <li>org.abego.treelayout:org.abego.treelayout.core:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep32" style="display:none"> 
+            <div id="_dep34" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -785,7 +825,7 @@
              </table> 
             </div></li> 
            <li>org.glassfish:javax.json:jar:1.0.4 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep34" style="display:none"> 
+            <div id="_dep36" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -800,7 +840,7 @@
              </table> 
             </div></li> 
            <li>com.ibm.icu:icu4j:jar:61.1 (compile) <i class="fas fa-info"></i> 
-            <div id="_dep36" style="display:none"> 
+            <div id="_dep38" style="display:none"> 
              <table border="0" class="bodyTable table table-striped table-hover"> 
               <thead> 
                <tr class="a"> 
@@ -817,8 +857,8 @@
           </ul></li> 
         </ul></li> 
       </ul></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-envs:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep38" style="display:none"> 
+     <li>it.bancaditalia.oss.vtl:vtl-envs:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+      <div id="_dep40" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -834,7 +874,7 @@
       </div> 
       <ul> 
        <li>it.bancaditalia.oss:sdmx:jar:2.3.3 (compile) <i class="fas fa-info"></i> 
-        <div id="_dep40" style="display:none"> 
+        <div id="_dep42" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -849,7 +889,7 @@
          </table> 
         </div></li> 
        <li>com.github.lucarosellini.rJava:JRI:jar:0.9-7 (compile) <i class="fas fa-info"></i> 
-        <div id="_dep42" style="display:none"> 
+        <div id="_dep44" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -864,8 +904,8 @@
          </table> 
         </div></li> 
       </ul></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-domains:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep44" style="display:none"> 
+     <li>it.bancaditalia.oss.vtl:vtl-domains:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+      <div id="_dep46" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -879,8 +919,8 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-session:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep46" style="display:none"> 
+     <li>it.bancaditalia.oss.vtl:vtl-session:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+      <div id="_dep48" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -894,8 +934,8 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-transform:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep48" style="display:none"> 
+     <li>it.bancaditalia.oss.vtl:vtl-transform:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
+      <div id="_dep50" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -909,8 +949,8 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>org.apache.logging.log4j:log4j-slf4j-impl:jar:2.12.1 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep50" style="display:none"> 
+     <li>org.apache.logging.log4j:log4j-slf4j-impl:jar:2.13.3 (compile) <i class="fas fa-info"></i> 
+      <div id="_dep52" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -925,8 +965,8 @@
        </table> 
       </div> 
       <ul> 
-       <li>org.apache.logging.log4j:log4j-api:jar:2.12.1 (compile) <i class="fas fa-info"></i> 
-        <div id="_dep52" style="display:none"> 
+       <li>org.apache.logging.log4j:log4j-api:jar:2.13.3 (compile) <i class="fas fa-info"></i> 
+        <div id="_dep54" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -940,8 +980,8 @@
           </tbody> 
          </table> 
         </div></li> 
-       <li>org.apache.logging.log4j:log4j-core:jar:2.12.1 (runtime) <i class="fas fa-info"></i> 
-        <div id="_dep54" style="display:none"> 
+       <li>org.apache.logging.log4j:log4j-core:jar:2.13.3 (runtime) <i class="fas fa-info"></i> 
+        <div id="_dep56" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -957,7 +997,7 @@
         </div></li> 
       </ul></li> 
      <li>org.slf4j:slf4j-api:jar:1.7.26 (compile) <i class="fas fa-info"></i> 
-      <div id="_dep56" style="display:none"> 
+      <div id="_dep58" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -972,7 +1012,7 @@
        </table> 
       </div></li> 
      <li>org.junit.jupiter:junit-jupiter:jar:5.6.1 (test) <i class="fas fa-info"></i> 
-      <div id="_dep58" style="display:none"> 
+      <div id="_dep60" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -987,8 +1027,8 @@
        </table> 
       </div> 
       <ul> 
-       <li>org.junit.jupiter:junit-jupiter-api:jar:5.6.1 (test) <i class="fas fa-info"></i> 
-        <div id="_dep60" style="display:none"> 
+       <li>org.junit.jupiter:junit-jupiter-api:jar:5.6.2 (test) <i class="fas fa-info"></i> 
+        <div id="_dep62" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -1004,7 +1044,7 @@
         </div> 
         <ul> 
          <li>org.opentest4j:opentest4j:jar:1.2.0 (test) <i class="fas fa-info"></i> 
-          <div id="_dep62" style="display:none"> 
+          <div id="_dep64" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -1018,8 +1058,8 @@
             </tbody> 
            </table> 
           </div></li> 
-         <li>org.junit.platform:junit-platform-commons:jar:1.6.1 (test) <i class="fas fa-info"></i> 
-          <div id="_dep64" style="display:none"> 
+         <li>org.junit.platform:junit-platform-commons:jar:1.6.2 (test) <i class="fas fa-info"></i> 
+          <div id="_dep66" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -1034,8 +1074,8 @@
            </table> 
           </div></li> 
         </ul></li> 
-       <li>org.junit.jupiter:junit-jupiter-engine:jar:5.6.1 (test) <i class="fas fa-info"></i> 
-        <div id="_dep66" style="display:none"> 
+       <li>org.junit.jupiter:junit-jupiter-engine:jar:5.6.2 (test) <i class="fas fa-info"></i> 
+        <div id="_dep68" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -1050,8 +1090,8 @@
          </table> 
         </div> 
         <ul> 
-         <li>org.junit.platform:junit-platform-engine:jar:1.6.1 (test) <i class="fas fa-info"></i> 
-          <div id="_dep68" style="display:none"> 
+         <li>org.junit.platform:junit-platform-engine:jar:1.6.2 (test) <i class="fas fa-info"></i> 
+          <div id="_dep70" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
              <tr class="a"> 
@@ -1068,7 +1108,7 @@
         </ul></li> 
       </ul></li> 
      <li>org.junit.jupiter:junit-jupiter-params:jar:5.6.1 (test) <i class="fas fa-info"></i> 
-      <div id="_dep70" style="display:none"> 
+      <div id="_dep72" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -1084,7 +1124,7 @@
       </div> 
       <ul> 
        <li>org.apiguardian:apiguardian-api:jar:1.1.0 (test) <i class="fas fa-info"></i> 
-        <div id="_dep72" style="display:none"> 
+        <div id="_dep74" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -1115,9 +1155,9 @@
  <p><b>BSD licence: </b>ANTLR 3 Runtime</p> 
  <p><b>European Union Public Licence (EUPL): </b>SDMX</p> 
  <p><b>BSD 3-Clause "New" or "Revised" License (BSD-3-Clause): </b>abego TreeLayout Core</p> 
- <p><b>European Union Public Licence v1.2 (EUPL): </b>vtl-api, vtl-domains, vtl-envs, vtl-launcher, vtl-parser, vtl-session, vtl-transform, vtl-types</p> 
+ <p><b>European Union Public Licence v1.2 (EUPL): </b>vtl-api, vtl-confman, vtl-domains, vtl-envs, vtl-launcher, vtl-parser, vtl-session, vtl-transform, vtl-types</p> 
  <p><b>Unknown: </b>StringTemplate 4</p> 
- <p><b>EDL 1.0: </b>JavaBeans Activation Framework API jar</p> 
+ <p><b>EDL 1.0: </b>Jakarta Activation API jar</p> 
  <p><b>Apache License, Version 2.0: </b>Apache Log4j API, Apache Log4j Core, Apache Log4j SLF4J Binding, fastinfoset</p> 
  <p><b>Eclipse Distribution License - v 1.0: </b>Extended StAX API, JAXB Runtime, TXW2 Runtime, fastinfoset, istack common utility code runtime, jakarta.xml.bind-api</p> 
  <p><b>Dual license consisting of the CDDL v1.1 and GPL v2: </b>JSR 353 (JSON Processing) Default Provider</p> 
@@ -1182,87 +1222,96 @@
     <td>Yes</td> 
    </tr> 
    <tr class="a"> 
-    <td>vtl-api/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>vtl-domains/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>vtl-engine/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>vtl-envs/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>vtl-parser/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>vtl-session/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>vtl-transform/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>vtl-types/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>jakarta.activation-api-1.2.1.jar</td> 
-    <td>44.4 kB</td> 
-    <td>42</td> 
-    <td>31</td> 
-    <td>1</td> 
-    <td>1.5</td> 
+    <td>vtl-api-1.0.7-SNAPSHOT.jar</td> 
+    <td>72.3 kB</td> 
+    <td>107</td> 
+    <td>86</td> 
+    <td>9</td> 
+    <td>1.8</td> 
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
+    <td>vtl-confman-1.0.7-SNAPSHOT.jar</td> 
+    <td>4.8 kB</td> 
+    <td>14</td> 
+    <td>1</td> 
+    <td>1</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>vtl-domains-1.0.7-SNAPSHOT.jar</td> 
+    <td>16.1 kB</td> 
+    <td>18</td> 
+    <td>5</td> 
+    <td>1</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>vtl-engine-1.0.7-SNAPSHOT.jar</td> 
+    <td>74.6 kB</td> 
+    <td>68</td> 
+    <td>49</td> 
+    <td>5</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>vtl-envs-1.0.7-SNAPSHOT.jar</td> 
+    <td>31.8 kB</td> 
+    <td>22</td> 
+    <td>7</td> 
+    <td>3</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>vtl-parser-1.0.7-SNAPSHOT.jar</td> 
+    <td>348.9 kB</td> 
+    <td>243</td> 
+    <td>231</td> 
+    <td>1</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>vtl-session-1.0.7-SNAPSHOT.jar</td> 
+    <td>17.5 kB</td> 
+    <td>20</td> 
+    <td>4</td> 
+    <td>2</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>vtl-transform-1.0.7-SNAPSHOT.jar</td> 
+    <td>253.7 kB</td> 
+    <td>118</td> 
+    <td>92</td> 
+    <td>11</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>vtl-types-1.0.7-SNAPSHOT.jar</td> 
+    <td>136.9 kB</td> 
+    <td>97</td> 
+    <td>77</td> 
+    <td>7</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>jakarta.activation-api-1.2.2.jar</td> 
+    <td>46.6 kB</td> 
+    <td>43</td> 
+    <td>32</td> 
+    <td>2</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
     <td>jakarta.xml.bind-api-2.3.2.jar</td> 
     <td>115.5 kB</td> 
     <td>137</td> 
@@ -1271,7 +1320,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.abego.treelayout.core-1.0.3.jar</td> 
     <td>26.8 kB</td> 
     <td>36</td> 
@@ -1280,7 +1329,7 @@
     <td>1.5</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>ST4-4.1.jar</td> 
     <td>253 kB</td> 
     <td>147</td> 
@@ -1289,7 +1338,7 @@
     <td>1.6</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>antlr-runtime-3.5.2.jar</td> 
     <td>167.8 kB</td> 
     <td>130</td> 
@@ -1298,7 +1347,7 @@
     <td>1.5</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>antlr4-4.7.2.jar</td> 
     <td>1.2 MB</td> 
     <td>491</td> 
@@ -1307,7 +1356,7 @@
     <td>1.7</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>antlr4-runtime-4.7.2.jar</td> 
     <td>337.9 kB</td> 
     <td>237</td> 
@@ -1316,34 +1365,34 @@
     <td>1.7</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
-    <td>log4j-api-2.12.1.jar</td> 
-    <td>276.8 kB</td> 
-    <td>207</td> 
-    <td>174</td> 
-    <td>8</td> 
+   <tr class="a"> 
+    <td>log4j-api-2.13.3.jar</td> 
+    <td>292.3 kB</td> 
+    <td>214</td> 
+    <td>180</td> 
+    <td>9</td> 
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
-    <td>log4j-core-2.12.1.jar</td> 
+   <tr class="b"> 
+    <td>log4j-core-2.13.3.jar</td> 
     <td>1.7 MB</td> 
-    <td>1187</td> 
-    <td>1097</td> 
-    <td>50</td> 
-    <td>1.7</td> 
+    <td>1209</td> 
+    <td>1117</td> 
+    <td>51</td> 
+    <td>1.8</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
-    <td>log4j-slf4j-impl-2.12.1.jar</td> 
-    <td>23.5 kB</td> 
+   <tr class="a"> 
+    <td>log4j-slf4j-impl-2.13.3.jar</td> 
+    <td>23.6 kB</td> 
     <td>26</td> 
     <td>10</td> 
     <td>2</td> 
-    <td>1.7</td> 
+    <td>1.8</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>apiguardian-api-1.1.0.jar</td> 
     <td>2.4 kB</td> 
     <td>8</td> 
@@ -1352,7 +1401,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>javax.json-1.0.4.jar</td> 
     <td>85.1 kB</td> 
     <td>88</td> 
@@ -1361,7 +1410,7 @@
     <td>1.6</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>jaxb-runtime-2.3.2.jar</td> 
     <td>1 MB</td> 
     <td>804</td> 
@@ -1370,16 +1419,16 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
-    <td>txw2-2.3.2.jar</td> 
-    <td>72.1 kB</td> 
+   <tr class="a"> 
+    <td>txw2-2.3.3.jar</td> 
+    <td>72 kB</td> 
     <td>69</td> 
     <td>54</td> 
     <td>4</td> 
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>junit-jupiter-5.6.1.jar</td> 
     <td>6.4 kB</td> 
     <td>5</td> 
@@ -1388,8 +1437,8 @@
     <td>-</td> 
     <td>No</td> 
    </tr> 
-   <tr class="b"> 
-    <td>junit-jupiter-api-5.6.1.jar</td> 
+   <tr class="a"> 
+    <td>junit-jupiter-api-5.6.2.jar</td> 
     <td>154 kB</td> 
     <td>150</td> 
     <td>135</td> 
@@ -1397,8 +1446,8 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
-    <td>junit-jupiter-engine-5.6.1.jar</td> 
+   <tr class="b"> 
+    <td>junit-jupiter-engine-5.6.2.jar</td> 
     <td>209.3 kB</td> 
     <td>130</td> 
     <td>113</td> 
@@ -1406,7 +1455,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>junit-jupiter-params-5.6.1.jar</td> 
     <td>562.3 kB</td> 
     <td>370</td> 
@@ -1415,8 +1464,8 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
-    <td>junit-platform-commons-1.6.1.jar</td> 
+   <tr class="b"> 
+    <td>junit-platform-commons-1.6.2.jar</td> 
     <td>96.7 kB</td> 
     <td>61</td> 
     <td>41</td> 
@@ -1424,8 +1473,8 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
-    <td>junit-platform-engine-1.6.1.jar</td> 
+   <tr class="a"> 
+    <td>junit-platform-engine-1.6.2.jar</td> 
     <td>174.1 kB</td> 
     <td>139</td> 
     <td>123</td> 
@@ -1433,7 +1482,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>stax-ex-1.8.1.jar</td> 
     <td>38.1 kB</td> 
     <td>38</td> 
@@ -1442,7 +1491,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>opentest4j-1.2.0.jar</td> 
     <td>7.7 kB</td> 
     <td>11</td> 
@@ -1451,7 +1500,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>slf4j-api-1.7.26.jar</td> 
     <td>41.1 kB</td> 
     <td>46</td> 
@@ -1460,7 +1509,7 @@
     <td>1.5</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <th>Total</th> 
     <th>Size</th> 
     <th>Entries</th> 
@@ -1469,25 +1518,25 @@
     <th>Java Version</th> 
     <th>Debug Information</th> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
+    <td>37</td> 
+    <td>20.6 MB</td> 
+    <td>10518</td> 
+    <td>6252</td> 
+    <td>296</td> 
+    <td>1.8</td> 
     <td>36</td> 
-    <td>19.6 MB</td> 
-    <td>9781</td> 
-    <td>5673</td> 
-    <td>253</td> 
-    <td>1.7</td> 
-    <td>27</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>compile: 23</td> 
+    <td>compile: 16.2 MB</td> 
+    <td>compile: 7302</td> 
+    <td>compile: 3483</td> 
+    <td>compile: 130</td> 
+    <td>-</td> 
+    <td>compile: 23</td> 
    </tr> 
    <tr class="b"> 
-    <td>compile: 22</td> 
-    <td>compile: 15.2 MB</td> 
-    <td>compile: 6587</td> 
-    <td>compile: 2924</td> 
-    <td>compile: 88</td> 
-    <td>-</td> 
-    <td>compile: 14</td> 
-   </tr> 
-   <tr class="a"> 
     <td>test: 8</td> 
     <td>test: 1.2 MB</td> 
     <td>test: 874</td> 
@@ -1496,12 +1545,12 @@
     <td>-</td> 
     <td>test: 7</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>runtime: 6</td> 
-    <td>runtime: 3.1 MB</td> 
-    <td>runtime: 2320</td> 
-    <td>runtime: 1990</td> 
-    <td>runtime: 105</td> 
+    <td>runtime: 3.2 MB</td> 
+    <td>runtime: 2342</td> 
+    <td>runtime: 2010</td> 
+    <td>runtime: 106</td> 
     <td>-</td> 
     <td>runtime: 6</td> 
    </tr> 
@@ -1540,7 +1589,7 @@ Contribute
                     <li class="nav-header">
 Documentation
                     </li>
-                    <li class="nav-item "><a  href="../RVTL/documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
+                    <li class="nav-item "><a  href="../documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
                     <li class="nav-item "><a  href="../advanced.html"  title="Advanced usage"  class="nav-link" >Advanced usage</a></li>
                     <li class="nav-item "><a  href="../apidocs"  title="API documentation"  class="nav-link" >API documentation</a></li>
                 </ul>
@@ -1552,9 +1601,8 @@ Maven Documentation
                     </li>
                                 <li class="nav-item active"><a  href="project-info.html"  title="Project Information"  class="nav-link" >Project Information <i class="fas fa-angle-down"></i></a>        <ul class="nav flex-column nav-list">
                     <li class="nav-item active"><a  href=""  title="Dependencies"  class="nav-link" >Dependencies</a></li>
+                    <li class="nav-item "><a  href="dependency-convergence.html"  title="Dependency Convergence"  class="nav-link" >Dependency Convergence</a></li>
                     <li class="nav-item "><a  href="dependency-info.html"  title="Dependency Information"  class="nav-link" >Dependency Information</a></li>
-                    <li class="nav-item "><a  href="dependency-management.html"  title="Dependency Management"  class="nav-link" >Dependency Management</a></li>
-                    <li class="nav-item "><a  href="distribution-management.html"  title="Distribution Management"  class="nav-link" >Distribution Management</a></li>
                     <li class="nav-item "><a  href="index.html"  title="About"  class="nav-link" >About</a></li>
                     <li class="nav-item "><a  href="issue-management.html"  title="Issue Management"  class="nav-link" >Issue Management</a></li>
                     <li class="nav-item "><a  href="licenses.html"  title="Licenses"  class="nav-link" >Licenses</a></li>
@@ -1589,7 +1637,7 @@ Maven Documentation
         <p class="copyright">Copyright &copy;2020
 . All Rights Reserved.</p>
         <p class="version-date">
-<span class="projectVersion">Version: 1.0.3. </span>        </p>
+<span class="projectVersion">Version: 1.0.7-SNAPSHOT. </span>        </p>
         <p><a href="https://github.com/devacfr/reflow-maven-skin" title="Reflow Maven skin">Reflow Maven skin</a> by <a href="http://devacfr.github.io" target="_blank" title="devacfr">devacfr</a>.</p>
       </div>
     </div>

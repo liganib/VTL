@@ -22,12 +22,12 @@
     <link href="../css/site.css" rel="stylesheet" />
     <link href="../css/print.css" rel="stylesheet" media="print" />
 <link rel="apple-touch-icon" sizes="144x144" href="../apple-touch-icon.png">
-			        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-			        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-		        	<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
-			        <link rel="preload" as="image" href="../images/wallpaper.jpg">
-			        <meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
-			        <meta name="application-name" content="VTL E&amp;E">
+				<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+				<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+				<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+				<link rel="preload" as="image" href="../images/wallpaper.jpg">
+				<meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
+				<meta name="application-name" content="VTL E&amp;E">
         </head> <!-- end : head -->
 <body class="page-plugins project-vtl-engine anchorjs-enabled scrolltop-smooth-enabled">
     <nav id="m-top-navbar" class="navbar navbar-expand-lg fixed-top navbar-light bg-light border-bottom">
@@ -44,7 +44,7 @@
                     <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation <b class="caret"></b></a>
                         <div class="dropdown-menu">
-                            <a href="../RVTL/documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
+                            <a href="../documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
                             <a href="../advanced.html" title="Advanced usage"  class="dropdown-item ">Advanced usage</a>
                             <a href="../apidocs" title="API documentation"  class="dropdown-item ">API documentation</a>
                         </div>
@@ -55,9 +55,8 @@
                             <div class="dropdown-submenu">
                                 <a  href="project-info.html"  title="Project Information"  class="dropdown-item active" >Project Information</a>                                <div class="dropdown-menu">
                                     <a href="dependencies.html" title="Dependencies"  class="dropdown-item ">Dependencies</a>
+                                    <a href="dependency-convergence.html" title="Dependency Convergence"  class="dropdown-item ">Dependency Convergence</a>
                                     <a href="dependency-info.html" title="Dependency Information"  class="dropdown-item ">Dependency Information</a>
-                                    <a href="dependency-management.html" title="Dependency Management"  class="dropdown-item ">Dependency Management</a>
-                                    <a href="distribution-management.html" title="Distribution Management"  class="dropdown-item ">Distribution Management</a>
                                     <a href="index.html" title="About"  class="dropdown-item ">About</a>
                                     <a href="issue-management.html" title="Issue Management"  class="dropdown-item ">Issue Management</a>
                                     <a href="licenses.html" title="Licenses"  class="dropdown-item ">Licenses</a>
@@ -79,6 +78,25 @@
             </div><!--/.nav-collapse -->
     </nav> <!--/.navbar -->
     <div class="main-body">
+    <div class="header " role="main">
+        <div class="container container-fluid">
+      <div class="jumbotron header--jumbotron ">
+        <div id="banner" class="row header--banner">
+          <div class="col-md-12">
+            <div class="float-left header--banner--left bannerLeft">
+                    <a href="..">
+            <img class="float-left m-2 img-fluid" src="../images/logo.svg" alt="VTL E&E" width="144" height="144" />
+            <h1>VTL <span class="color-highlight">E&amp;E</span></h1>
+            </a>
+                    <p class="lead">The prototypal engine and editor for the Validation and Transformation Language</p>
+            </div>
+            <div class="float-right header--banner--right bannerRight">
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+    </div> <!-- end : header -->
     <div class="row mt-5">
         <div class="d-xs-none d-sm-none d-md-none d-lg-block col-lg-2">
         </div>
@@ -124,58 +142,58 @@
    </tr> 
    <tr class="b"> 
     <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="https://maven.apache.org/enforcer/maven-enforcer-plugin/">maven-enforcer-plugin</a></td> 
+    <td>3.0.0-M3</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-gpg-plugin/">maven-gpg-plugin</a></td> 
     <td>1.6</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-install-plugin/">maven-install-plugin</a></td> 
     <td>2.4</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-jar-plugin/">maven-jar-plugin</a></td> 
     <td>3.1.1</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-javadoc-plugin/">maven-javadoc-plugin</a></td> 
     <td>3.2.0</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-resources-plugin/">maven-resources-plugin</a></td> 
     <td>3.1.0</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-site-plugin/">maven-site-plugin</a></td> 
     <td>3.9.0</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-source-plugin/">maven-source-plugin</a></td> 
     <td>3.2.0</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/surefire/maven-surefire-plugin/">maven-surefire-plugin</a></td> 
     <td>3.0.0-M3</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <td>org.codehaus.mojo</td> 
     <td><a class="externalLink" href="http://www.mojohaus.org/flatten-maven-plugin/flatten-maven-plugin">flatten-maven-plugin</a></td> 
     <td>1.2.1</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>org.codehaus.mojo</td> 
     <td><a class="externalLink" href="https://github.com/mojohaus/jaxb2-maven-plugin/">jaxb2-maven-plugin</a></td> 
     <td>2.5.0</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>org.jacoco</td> 
-    <td><a class="externalLink" href="http://jacoco-maven-plugin">jacoco-maven-plugin</a></td> 
-    <td>0.8.5</td> 
    </tr> 
    <tr class="a"> 
     <td>org.sonatype.plugins</td> 
@@ -205,12 +223,7 @@
    <tr class="a"> 
     <td>org.apache.maven.plugins</td> 
     <td><a class="externalLink" href="https://maven.apache.org/plugins/maven-project-info-reports-plugin/">maven-project-info-reports-plugin</a></td> 
-    <td>3.0.0</td> 
-   </tr> 
-   <tr class="b"> 
-    <td>org.jacoco</td> 
-    <td><a class="externalLink" href="http://jacoco-maven-plugin">jacoco-maven-plugin</a></td> 
-    <td>0.8.5</td> 
+    <td>3.1.0</td> 
    </tr> 
   </tbody> 
  </table> 
@@ -247,7 +260,7 @@ Contribute
                     <li class="nav-header">
 Documentation
                     </li>
-                    <li class="nav-item "><a  href="../RVTL/documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
+                    <li class="nav-item "><a  href="../documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
                     <li class="nav-item "><a  href="../advanced.html"  title="Advanced usage"  class="nav-link" >Advanced usage</a></li>
                     <li class="nav-item "><a  href="../apidocs"  title="API documentation"  class="nav-link" >API documentation</a></li>
                 </ul>
@@ -259,9 +272,8 @@ Maven Documentation
                     </li>
                                 <li class="nav-item active"><a  href="project-info.html"  title="Project Information"  class="nav-link" >Project Information <i class="fas fa-angle-down"></i></a>        <ul class="nav flex-column nav-list">
                     <li class="nav-item "><a  href="dependencies.html"  title="Dependencies"  class="nav-link" >Dependencies</a></li>
+                    <li class="nav-item "><a  href="dependency-convergence.html"  title="Dependency Convergence"  class="nav-link" >Dependency Convergence</a></li>
                     <li class="nav-item "><a  href="dependency-info.html"  title="Dependency Information"  class="nav-link" >Dependency Information</a></li>
-                    <li class="nav-item "><a  href="dependency-management.html"  title="Dependency Management"  class="nav-link" >Dependency Management</a></li>
-                    <li class="nav-item "><a  href="distribution-management.html"  title="Distribution Management"  class="nav-link" >Distribution Management</a></li>
                     <li class="nav-item "><a  href="index.html"  title="About"  class="nav-link" >About</a></li>
                     <li class="nav-item "><a  href="issue-management.html"  title="Issue Management"  class="nav-link" >Issue Management</a></li>
                     <li class="nav-item "><a  href="licenses.html"  title="Licenses"  class="nav-link" >Licenses</a></li>
@@ -296,7 +308,7 @@ Maven Documentation
         <p class="copyright">Copyright &copy;2020
 . All Rights Reserved.</p>
         <p class="version-date">
-<span class="projectVersion">Version: 1.0.3. </span>        </p>
+<span class="projectVersion">Version: 1.0.7-SNAPSHOT. </span>        </p>
         <p><a href="https://github.com/devacfr/reflow-maven-skin" title="Reflow Maven skin">Reflow Maven skin</a> by <a href="http://devacfr.github.io" target="_blank" title="devacfr">devacfr</a>.</p>
       </div>
     </div>

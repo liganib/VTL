@@ -22,12 +22,12 @@
     <link href="../css/site.css" rel="stylesheet" />
     <link href="../css/print.css" rel="stylesheet" media="print" />
 <link rel="apple-touch-icon" sizes="144x144" href="../apple-touch-icon.png">
-			        <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-			        <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-		        	<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
-			        <link rel="preload" as="image" href="../images/wallpaper.jpg">
-			        <meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
-			        <meta name="application-name" content="VTL E&amp;E">
+				<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+				<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+				<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+				<link rel="preload" as="image" href="../images/wallpaper.jpg">
+				<meta name="apple-mobile-web-app-title" content="VTL E&amp;E">
+				<meta name="application-name" content="VTL E&amp;E">
         </head> <!-- end : head -->
 <body class="page-dependencies project-vtl-transform anchorjs-enabled scrolltop-smooth-enabled m-toc-top-enabled">
     <nav id="m-top-navbar" class="navbar navbar-expand-lg fixed-top navbar-light bg-light border-bottom">
@@ -44,7 +44,7 @@
                     <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation <b class="caret"></b></a>
                         <div class="dropdown-menu">
-                            <a href="../RVTL/documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
+                            <a href="../documentation.html#get-started" title="Get Started"  class="dropdown-item ">Get Started</a>
                             <a href="../advanced.html" title="Advanced usage"  class="dropdown-item ">Advanced usage</a>
                             <a href="../apidocs" title="API documentation"  class="dropdown-item ">API documentation</a>
                         </div>
@@ -55,9 +55,8 @@
                             <div class="dropdown-submenu">
                                 <a  href="project-info.html"  title="Project Information"  class="dropdown-item active" >Project Information</a>                                <div class="dropdown-menu">
                                     <a href="" title="Dependencies"  class="dropdown-item active">Dependencies</a>
+                                    <a href="dependency-convergence.html" title="Dependency Convergence"  class="dropdown-item ">Dependency Convergence</a>
                                     <a href="dependency-info.html" title="Dependency Information"  class="dropdown-item ">Dependency Information</a>
-                                    <a href="dependency-management.html" title="Dependency Management"  class="dropdown-item ">Dependency Management</a>
-                                    <a href="distribution-management.html" title="Distribution Management"  class="dropdown-item ">Distribution Management</a>
                                     <a href="index.html" title="About"  class="dropdown-item ">About</a>
                                     <a href="issue-management.html" title="Issue Management"  class="dropdown-item ">Issue Management</a>
                                     <a href="licenses.html" title="Licenses"  class="dropdown-item ">Licenses</a>
@@ -70,7 +69,6 @@
                             </div>
                             <div class="dropdown-submenu">
                                 <a  href="project-reports.html"  title="Project Reports"  class="dropdown-item" >Project Reports</a>                                <div class="dropdown-menu">
-                                    <a href="jacoco/index.html" title="JaCoCo"  class="dropdown-item ">JaCoCo</a>
                                     <a href="apidocs/index.html" title="Javadoc"  class="dropdown-item ">Javadoc</a>
                                 </div>
                             </div>
@@ -80,6 +78,25 @@
             </div><!--/.nav-collapse -->
     </nav> <!--/.navbar -->
     <div class="main-body">
+    <div class="header " role="main">
+        <div class="container container-fluid">
+      <div class="jumbotron header--jumbotron ">
+        <div id="banner" class="row header--banner">
+          <div class="col-md-12">
+            <div class="float-left header--banner--left bannerLeft">
+                    <a href="..">
+            <img class="float-left m-2 img-fluid" src="../images/logo.svg" alt="VTL E&E" width="144" height="144" />
+            <h1>VTL <span class="color-highlight">E&amp;E</span></h1>
+            </a>
+                    <p class="lead">The prototypal engine and editor for the Validation and Transformation Language</p>
+            </div>
+            <div class="float-right header--banner--right bannerRight">
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+    </div> <!-- end : header -->
     <div class="row mt-5">
         <div class="d-xs-none d-sm-none d-md-none d-lg-block col-lg-2">
         </div>
@@ -164,14 +181,14 @@
     <tr class="b"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-api">vtl-api</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
     <tr class="a"> 
      <td>it.bancaditalia.oss.vtl</td> 
      <td><a class="externalLink" href="https://vpinna80.github.io/VTL/vtl-types">vtl-types</a></td> 
-     <td>1.0.3</td> 
+     <td>1.0.7-SNAPSHOT</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt">European Union Public Licence v1.2 (EUPL)</a></td> 
     </tr> 
@@ -203,7 +220,7 @@
     <tr class="b"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-slf4j-impl/">log4j-slf4j-impl</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
@@ -220,6 +237,13 @@
      <td>5.6.1</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
+    </tr> 
+    <tr class="a"> 
+     <td>org.mockito</td> 
+     <td><a class="externalLink" href="https://github.com/mockito/mockito">mockito-junit-jupiter</a></td> 
+     <td>3.5.7</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://github.com/mockito/mockito/blob/master/LICENSE">The MIT License</a></td> 
     </tr> 
    </tbody> 
   </table> 
@@ -245,16 +269,30 @@
    </thead> 
    <tbody> 
     <tr class="b"> 
+     <td>net.bytebuddy</td> 
+     <td><a class="externalLink" href="https://bytebuddy.net/byte-buddy">byte-buddy</a></td> 
+     <td>1.10.13</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
+    </tr> 
+    <tr class="a"> 
+     <td>net.bytebuddy</td> 
+     <td><a class="externalLink" href="https://bytebuddy.net/byte-buddy-agent">byte-buddy-agent</a></td> 
+     <td>1.10.13</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
+    </tr> 
+    <tr class="b"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-api/">log4j-api</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
     <tr class="a"> 
      <td>org.apache.logging.log4j</td> 
      <td><a class="externalLink" href="https://logging.apache.org/log4j/2.x/log4j-core/">log4j-core</a></td> 
-     <td>2.12.1</td> 
+     <td>2.13.3</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></td> 
     </tr> 
@@ -268,30 +306,44 @@
     <tr class="a"> 
      <td>org.junit.jupiter</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-jupiter-api</a></td> 
-     <td>5.6.1</td> 
+     <td>5.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="b"> 
      <td>org.junit.jupiter</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-jupiter-engine</a></td> 
-     <td>5.6.1</td> 
+     <td>5.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="a"> 
      <td>org.junit.platform</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-platform-commons</a></td> 
-     <td>1.6.1</td> 
+     <td>1.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
     </tr> 
     <tr class="b"> 
      <td>org.junit.platform</td> 
      <td><a class="externalLink" href="https://junit.org/junit5/">junit-platform-engine</a></td> 
-     <td>1.6.1</td> 
+     <td>1.6.2</td> 
      <td>jar</td> 
      <td><a class="externalLink" href="https://www.eclipse.org/legal/epl-v20.html">Eclipse Public License v2.0</a></td> 
+    </tr> 
+    <tr class="a"> 
+     <td>org.mockito</td> 
+     <td><a class="externalLink" href="https://github.com/mockito/mockito">mockito-core</a></td> 
+     <td>3.5.7</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="https://github.com/mockito/mockito/blob/master/LICENSE">The MIT License</a></td> 
+    </tr> 
+    <tr class="b"> 
+     <td>org.objenesis</td> 
+     <td><a class="externalLink" href="http://objenesis.org">objenesis</a></td> 
+     <td>2.5.1</td> 
+     <td>jar</td> 
+     <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2</a></td> 
     </tr> 
     <tr class="a"> 
      <td>org.opentest4j</td> 
@@ -330,7 +382,7 @@
  <section> 
   <h3 id="dependency-tree">Dependency Tree</h3> 
   <ul> 
-   <li>it.bancaditalia.oss.vtl:vtl-transform:jar:1.0.3 <i class="fas fa-info"></i> 
+   <li>it.bancaditalia.oss.vtl:vtl-transform:jar:1.0.7-SNAPSHOT <i class="fas fa-info"></i> 
     <div id="_dep0" style="display:none"> 
      <table border="0" class="bodyTable table table-striped table-hover"> 
       <thead> 
@@ -346,7 +398,7 @@
      </table> 
     </div> 
     <ul> 
-     <li>it.bancaditalia.oss.vtl:vtl-api:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
+     <li>it.bancaditalia.oss.vtl:vtl-api:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
       <div id="_dep2" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
@@ -361,7 +413,7 @@
         </tbody> 
        </table> 
       </div></li> 
-     <li>it.bancaditalia.oss.vtl:vtl-types:jar:1.0.3 (compile) <i class="fas fa-info"></i> 
+     <li>it.bancaditalia.oss.vtl:vtl-types:jar:1.0.7-SNAPSHOT (compile) <i class="fas fa-info"></i> 
       <div id="_dep4" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
@@ -407,7 +459,7 @@
        </table> 
       </div> 
       <ul> 
-       <li>org.junit.jupiter:junit-jupiter-api:jar:5.6.1 (test) <i class="fas fa-info"></i> 
+       <li>org.junit.jupiter:junit-jupiter-api:jar:5.6.2 (test) <i class="fas fa-info"></i> 
         <div id="_dep10" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
@@ -438,7 +490,7 @@
             </tbody> 
            </table> 
           </div></li> 
-         <li>org.junit.platform:junit-platform-commons:jar:1.6.1 (test) <i class="fas fa-info"></i> 
+         <li>org.junit.platform:junit-platform-commons:jar:1.6.2 (test) <i class="fas fa-info"></i> 
           <div id="_dep14" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
@@ -454,7 +506,7 @@
            </table> 
           </div></li> 
         </ul></li> 
-       <li>org.junit.jupiter:junit-jupiter-engine:jar:5.6.1 (test) <i class="fas fa-info"></i> 
+       <li>org.junit.jupiter:junit-jupiter-engine:jar:5.6.2 (test) <i class="fas fa-info"></i> 
         <div id="_dep16" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
@@ -470,7 +522,7 @@
          </table> 
         </div> 
         <ul> 
-         <li>org.junit.platform:junit-platform-engine:jar:1.6.1 (test) <i class="fas fa-info"></i> 
+         <li>org.junit.platform:junit-platform-engine:jar:1.6.2 (test) <i class="fas fa-info"></i> 
           <div id="_dep18" style="display:none"> 
            <table border="0" class="bodyTable table table-striped table-hover"> 
             <thead> 
@@ -519,8 +571,87 @@
          </table> 
         </div></li> 
       </ul></li> 
-     <li>org.apache.logging.log4j:log4j-slf4j-impl:jar:2.12.1 (test) <i class="fas fa-info"></i> 
+     <li>org.mockito:mockito-junit-jupiter:jar:3.5.7 (test) <i class="fas fa-info"></i> 
       <div id="_dep24" style="display:none"> 
+       <table border="0" class="bodyTable table table-striped table-hover"> 
+        <thead> 
+         <tr class="a"> 
+          <th>mockito-junit-jupiter</th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr class="b"> 
+          <td> <p><b>Description: </b>Mockito JUnit 5 support</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/mockito/mockito">https://github.com/mockito/mockito</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="https://github.com/mockito/mockito/blob/master/LICENSE">The MIT License</a></p></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <ul> 
+       <li>org.mockito:mockito-core:jar:3.5.7 (test) <i class="fas fa-info"></i> 
+        <div id="_dep26" style="display:none"> 
+         <table border="0" class="bodyTable table table-striped table-hover"> 
+          <thead> 
+           <tr class="a"> 
+            <th>mockito-core</th> 
+           </tr> 
+          </thead> 
+          <tbody> 
+           <tr class="b"> 
+            <td> <p><b>Description: </b>Mockito mock objects library core API and implementation</p> <p><b>URL: </b><a class="externalLink" href="https://github.com/mockito/mockito">https://github.com/mockito/mockito</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="https://github.com/mockito/mockito/blob/master/LICENSE">The MIT License</a></p></td> 
+           </tr> 
+          </tbody> 
+         </table> 
+        </div> 
+        <ul> 
+         <li>net.bytebuddy:byte-buddy:jar:1.10.13 (test) <i class="fas fa-info"></i> 
+          <div id="_dep28" style="display:none"> 
+           <table border="0" class="bodyTable table table-striped table-hover"> 
+            <thead> 
+             <tr class="a"> 
+              <th>Byte Buddy (without dependencies)</th> 
+             </tr> 
+            </thead> 
+            <tbody> 
+             <tr class="b"> 
+              <td> <p><b>Description: </b>Byte Buddy is a Java library for creating Java classes at run time. This artifact is a build of Byte Buddy with all ASM dependencies repackaged into its own name space.</p> <p><b>URL: </b><a class="externalLink" href="https://bytebuddy.net/byte-buddy">https://bytebuddy.net/byte-buddy</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></p></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div></li> 
+         <li>net.bytebuddy:byte-buddy-agent:jar:1.10.13 (test) <i class="fas fa-info"></i> 
+          <div id="_dep30" style="display:none"> 
+           <table border="0" class="bodyTable table table-striped table-hover"> 
+            <thead> 
+             <tr class="a"> 
+              <th>Byte Buddy agent</th> 
+             </tr> 
+            </thead> 
+            <tbody> 
+             <tr class="b"> 
+              <td> <p><b>Description: </b>The Byte Buddy agent offers convenience for attaching an agent to the local or a remote VM.</p> <p><b>URL: </b><a class="externalLink" href="https://bytebuddy.net/byte-buddy-agent">https://bytebuddy.net/byte-buddy-agent</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></p></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div></li> 
+         <li>org.objenesis:objenesis:jar:2.5.1 (test) <i class="fas fa-info"></i> 
+          <div id="_dep32" style="display:none"> 
+           <table border="0" class="bodyTable table table-striped table-hover"> 
+            <thead> 
+             <tr class="a"> 
+              <th>Objenesis</th> 
+             </tr> 
+            </thead> 
+            <tbody> 
+             <tr class="b"> 
+              <td> <p><b>Description: </b>A library for instantiating Java objects</p> <p><b>URL: </b><a class="externalLink" href="http://objenesis.org">http://objenesis.org</a></p> <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2</a></p></td> 
+             </tr> 
+            </tbody> 
+           </table> 
+          </div></li> 
+        </ul></li> 
+      </ul></li> 
+     <li>org.apache.logging.log4j:log4j-slf4j-impl:jar:2.13.3 (test) <i class="fas fa-info"></i> 
+      <div id="_dep34" style="display:none"> 
        <table border="0" class="bodyTable table table-striped table-hover"> 
         <thead> 
          <tr class="a"> 
@@ -535,8 +666,8 @@
        </table> 
       </div> 
       <ul> 
-       <li>org.apache.logging.log4j:log4j-api:jar:2.12.1 (test) <i class="fas fa-info"></i> 
-        <div id="_dep26" style="display:none"> 
+       <li>org.apache.logging.log4j:log4j-api:jar:2.13.3 (test) <i class="fas fa-info"></i> 
+        <div id="_dep36" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -550,8 +681,8 @@
           </tbody> 
          </table> 
         </div></li> 
-       <li>org.apache.logging.log4j:log4j-core:jar:2.12.1 (test) <i class="fas fa-info"></i> 
-        <div id="_dep28" style="display:none"> 
+       <li>org.apache.logging.log4j:log4j-core:jar:2.13.3 (test) <i class="fas fa-info"></i> 
+        <div id="_dep38" style="display:none"> 
          <table border="0" class="bodyTable table table-striped table-hover"> 
           <thead> 
            <tr class="a"> 
@@ -573,11 +704,13 @@
 <a name="Licenses"></a> 
 <section> 
  <h2 id="licenses1">Licenses</h2> 
+ <p><b>Apache 2: </b>Objenesis</p> 
  <p><b>European Union Public Licence v1.2 (EUPL): </b>vtl-api, vtl-transform, vtl-types</p> 
  <p><b>The Apache License, Version 2.0: </b>org.apiguardian:apiguardian-api, org.opentest4j:opentest4j</p> 
  <p><b>MIT License: </b>SLF4J API Module</p> 
+ <p><b>The MIT License: </b>mockito-core, mockito-junit-jupiter</p> 
  <p><b>Eclipse Public License v2.0: </b>JUnit Jupiter (Aggregator), JUnit Jupiter API, JUnit Jupiter Engine, JUnit Jupiter Params, JUnit Platform Commons, JUnit Platform Engine API</p> 
- <p><b>Apache License, Version 2.0: </b>Apache Log4j API, Apache Log4j Core, Apache Log4j SLF4J Binding</p> 
+ <p><b>Apache License, Version 2.0: </b>Apache Log4j API, Apache Log4j Core, Apache Log4j SLF4J Binding, Byte Buddy (without dependencies), Byte Buddy agent</p> 
 </section> 
 <a name="Dependency_File_Details"></a> 
 <section> 
@@ -594,48 +727,66 @@
     <th title="Indicates whether these dependencies have been compiled with debug information.">Debug Information</th> 
    </tr> 
    <tr class="b"> 
-    <td>vtl-api/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
+    <td>vtl-api-1.0.7-SNAPSHOT.jar</td> 
+    <td>72.3 kB</td> 
+    <td>107</td> 
+    <td>86</td> 
+    <td>9</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
    </tr> 
    <tr class="a"> 
-    <td>vtl-types/target/classes</td> 
-    <td>-</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>0</td> 
-    <td>-</td> 
-    <td>No</td> 
+    <td>vtl-types-1.0.7-SNAPSHOT.jar</td> 
+    <td>136.9 kB</td> 
+    <td>97</td> 
+    <td>77</td> 
+    <td>7</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
    </tr> 
    <tr class="b"> 
-    <td>log4j-api-2.12.1.jar</td> 
-    <td>276.8 kB</td> 
-    <td>207</td> 
-    <td>174</td> 
-    <td>8</td> 
+    <td>byte-buddy-1.10.13.jar</td> 
+    <td>3.5 MB</td> 
+    <td>2504</td> 
+    <td>2449</td> 
+    <td>37</td> 
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
    <tr class="a"> 
-    <td>log4j-core-2.12.1.jar</td> 
+    <td>byte-buddy-agent-1.10.13.jar</td> 
+    <td>259.2 kB</td> 
+    <td>81</td> 
+    <td>63</td> 
+    <td>2</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>log4j-api-2.13.3.jar</td> 
+    <td>292.3 kB</td> 
+    <td>214</td> 
+    <td>180</td> 
+    <td>9</td> 
+    <td>-</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>log4j-core-2.13.3.jar</td> 
     <td>1.7 MB</td> 
-    <td>1187</td> 
-    <td>1097</td> 
-    <td>50</td> 
-    <td>1.7</td> 
+    <td>1209</td> 
+    <td>1117</td> 
+    <td>51</td> 
+    <td>1.8</td> 
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
-    <td>log4j-slf4j-impl-2.12.1.jar</td> 
-    <td>23.5 kB</td> 
+    <td>log4j-slf4j-impl-2.13.3.jar</td> 
+    <td>23.6 kB</td> 
     <td>26</td> 
     <td>10</td> 
     <td>2</td> 
-    <td>1.7</td> 
+    <td>1.8</td> 
     <td>Yes</td> 
    </tr> 
    <tr class="a"> 
@@ -657,7 +808,7 @@
     <td>No</td> 
    </tr> 
    <tr class="a"> 
-    <td>junit-jupiter-api-5.6.1.jar</td> 
+    <td>junit-jupiter-api-5.6.2.jar</td> 
     <td>154 kB</td> 
     <td>150</td> 
     <td>135</td> 
@@ -666,7 +817,7 @@
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
-    <td>junit-jupiter-engine-5.6.1.jar</td> 
+    <td>junit-jupiter-engine-5.6.2.jar</td> 
     <td>209.3 kB</td> 
     <td>130</td> 
     <td>113</td> 
@@ -684,7 +835,7 @@
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
-    <td>junit-platform-commons-1.6.1.jar</td> 
+    <td>junit-platform-commons-1.6.2.jar</td> 
     <td>96.7 kB</td> 
     <td>61</td> 
     <td>41</td> 
@@ -693,7 +844,7 @@
     <td>Yes</td> 
    </tr> 
    <tr class="a"> 
-    <td>junit-platform-engine-1.6.1.jar</td> 
+    <td>junit-platform-engine-1.6.2.jar</td> 
     <td>174.1 kB</td> 
     <td>139</td> 
     <td>123</td> 
@@ -702,6 +853,33 @@
     <td>Yes</td> 
    </tr> 
    <tr class="b"> 
+    <td>mockito-core-3.5.7.jar</td> 
+    <td>671.7 kB</td> 
+    <td>661</td> 
+    <td>588</td> 
+    <td>65</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>mockito-junit-jupiter-3.5.7.jar</td> 
+    <td>4.9 kB</td> 
+    <td>9</td> 
+    <td>2</td> 
+    <td>1</td> 
+    <td>1.8</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>objenesis-2.5.1.jar</td> 
+    <td>54.4 kB</td> 
+    <td>58</td> 
+    <td>43</td> 
+    <td>9</td> 
+    <td>1.5</td> 
+    <td>Yes</td> 
+   </tr> 
+   <tr class="a"> 
     <td>opentest4j-1.2.0.jar</td> 
     <td>7.7 kB</td> 
     <td>11</td> 
@@ -710,7 +888,7 @@
     <td>-</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="a"> 
+   <tr class="b"> 
     <td>slf4j-api-1.7.26.jar</td> 
     <td>41.1 kB</td> 
     <td>46</td> 
@@ -719,7 +897,7 @@
     <td>1.5</td> 
     <td>Yes</td> 
    </tr> 
-   <tr class="b"> 
+   <tr class="a"> 
     <th>Total</th> 
     <th>Size</th> 
     <th>Entries</th> 
@@ -728,32 +906,32 @@
     <th>Java Version</th> 
     <th>Debug Information</th> 
    </tr> 
+   <tr class="b"> 
+    <td>19</td> 
+    <td>8 MB</td> 
+    <td>5886</td> 
+    <td>5408</td> 
+    <td>256</td> 
+    <td>1.8</td> 
+    <td>18</td> 
+   </tr> 
    <tr class="a"> 
-    <td>14</td> 
-    <td>3.2 MB</td> 
-    <td>2340</td> 
-    <td>2074</td> 
-    <td>124</td> 
-    <td>1.7</td> 
-    <td>11</td> 
+    <td>compile: 3</td> 
+    <td>compile: 250.4 kB</td> 
+    <td>compile: 250</td> 
+    <td>compile: 197</td> 
+    <td>compile: 20</td> 
+    <td>-</td> 
+    <td>compile: 3</td> 
    </tr> 
    <tr class="b"> 
-    <td>compile: 3</td> 
-    <td>compile: 41.1 kB</td> 
-    <td>compile: 46</td> 
-    <td>compile: 34</td> 
-    <td>compile: 4</td> 
+    <td>test: 16</td> 
+    <td>test: 7.7 MB</td> 
+    <td>test: 5636</td> 
+    <td>test: 5211</td> 
+    <td>test: 236</td> 
     <td>-</td> 
-    <td>compile: 1</td> 
-   </tr> 
-   <tr class="a"> 
-    <td>test: 11</td> 
-    <td>test: 3.2 MB</td> 
-    <td>test: 2294</td> 
-    <td>test: 2040</td> 
-    <td>test: 120</td> 
-    <td>-</td> 
-    <td>test: 10</td> 
+    <td>test: 15</td> 
    </tr> 
   </tbody> 
  </table> 
@@ -790,7 +968,7 @@ Contribute
                     <li class="nav-header">
 Documentation
                     </li>
-                    <li class="nav-item "><a  href="../RVTL/documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
+                    <li class="nav-item "><a  href="../documentation.html#get-started"  title="Get Started"  class="nav-link" >Get Started</a></li>
                     <li class="nav-item "><a  href="../advanced.html"  title="Advanced usage"  class="nav-link" >Advanced usage</a></li>
                     <li class="nav-item "><a  href="../apidocs"  title="API documentation"  class="nav-link" >API documentation</a></li>
                 </ul>
@@ -802,9 +980,8 @@ Maven Documentation
                     </li>
                                 <li class="nav-item active"><a  href="project-info.html"  title="Project Information"  class="nav-link" >Project Information <i class="fas fa-angle-down"></i></a>        <ul class="nav flex-column nav-list">
                     <li class="nav-item active"><a  href=""  title="Dependencies"  class="nav-link" >Dependencies</a></li>
+                    <li class="nav-item "><a  href="dependency-convergence.html"  title="Dependency Convergence"  class="nav-link" >Dependency Convergence</a></li>
                     <li class="nav-item "><a  href="dependency-info.html"  title="Dependency Information"  class="nav-link" >Dependency Information</a></li>
-                    <li class="nav-item "><a  href="dependency-management.html"  title="Dependency Management"  class="nav-link" >Dependency Management</a></li>
-                    <li class="nav-item "><a  href="distribution-management.html"  title="Distribution Management"  class="nav-link" >Distribution Management</a></li>
                     <li class="nav-item "><a  href="index.html"  title="About"  class="nav-link" >About</a></li>
                     <li class="nav-item "><a  href="issue-management.html"  title="Issue Management"  class="nav-link" >Issue Management</a></li>
                     <li class="nav-item "><a  href="licenses.html"  title="Licenses"  class="nav-link" >Licenses</a></li>
@@ -839,7 +1016,7 @@ Maven Documentation
         <p class="copyright">Copyright &copy;2020
 . All Rights Reserved.</p>
         <p class="version-date">
-<span class="projectVersion">Version: 1.0.3. </span>        </p>
+<span class="projectVersion">Version: 1.0.7-SNAPSHOT. </span>        </p>
         <p><a href="https://github.com/devacfr/reflow-maven-skin" title="Reflow Maven skin">Reflow Maven skin</a> by <a href="http://devacfr.github.io" target="_blank" title="devacfr">devacfr</a>.</p>
       </div>
     </div>

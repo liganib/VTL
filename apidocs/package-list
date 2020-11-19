@@ -15,6 +15,7 @@ it.bancaditalia.oss.vtl.impl.environment.exceptions
 it.bancaditalia.oss.vtl.impl.session
 it.bancaditalia.oss.vtl.impl.session.exceptions
 it.bancaditalia.oss.vtl.impl.transform
+it.bancaditalia.oss.vtl.impl.transform.aggregation
 it.bancaditalia.oss.vtl.impl.transform.bool
 it.bancaditalia.oss.vtl.impl.transform.dataset
 it.bancaditalia.oss.vtl.impl.transform.exceptions
@@ -23,6 +24,7 @@ it.bancaditalia.oss.vtl.impl.transform.ops
 it.bancaditalia.oss.vtl.impl.transform.scope
 it.bancaditalia.oss.vtl.impl.transform.string
 it.bancaditalia.oss.vtl.impl.transform.time
+it.bancaditalia.oss.vtl.impl.transform.util
 it.bancaditalia.oss.vtl.impl.types.config
 it.bancaditalia.oss.vtl.impl.types.data
 it.bancaditalia.oss.vtl.impl.types.data.date
