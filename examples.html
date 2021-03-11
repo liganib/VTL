@@ -83,13 +83,13 @@ monthlyWeight := inner_join(compWeight, compOfBasket)
 calculated := compOfBasket * monthlyWeight;
 
 /* Retrieve contribution from the provider */
-expected := 'ECB:ICP(1.0)M.U2.N.010000.3.CTG'
+expected := 'ECB:ICP(1.0)/M.U2.N.010000.3.CTG'
 	[keep OBS_VALUE]
 	[rename OBS_VALUE to expected_value];
 
 /* Join to compare and calculate percentual error for easy comparison */
 errors := inner_join(calculated, expected)
-	[calc errorPerc := abs((OBS_VALUE - expected_value) / expected_value) * 100];
+	[calc errorPerc := abs((number_var - expected_value) / expected_value) * 100];
 </pre> 
   </div> 
  </div> 
@@ -114,7 +114,7 @@ usd_post_2000 := usd[filter TIME_PERIOD &gt;  "2000"];
         <div class="feedback-links">
             <ul class="nav flex-column flex-nowrap">
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/vpinna80/VTL/src/site/markdown/examples.md.vm"><i class="far fa-edit" target="_blank" rel="noopener noreferrer"></i> Improve this page</a>
+                    <a class="nav-link" href="https://github.com/vpinna80/VTL/src\site\markdown/examples.md.vm"><i class="far fa-edit" target="_blank" rel="noopener noreferrer"></i> Improve this page</a>
                 </li>
             </ul>
         </div>
